@@ -41,6 +41,7 @@ Generated demo reports:
 - `demo/issue-checkout-timeout.html`
 - `demo/real-click-3571.html`
 - `demo/real-ky-863.html`
+- `demo/real-ripgrep-3419.html`
 
 Create a fresh HTML report:
 
@@ -53,15 +54,18 @@ issue-to-agent examples/issue-checkout-timeout.md \
 
 ## Real-Repo Smoke
 
-This repo includes real smoke tests against `pallets/click#3571` and `sindresorhus/ky#863`:
+This repo includes real smoke tests against `pallets/click#3571`, `sindresorhus/ky#863`, and `BurntSushi/ripgrep#3419`:
 
 - record: `examples/real-repo-smoke.md`
 - generated Markdown: `examples/real-click-3571-task.md`
 - generated Markdown: `examples/real-ky-863-task.md`
+- generated Markdown: `examples/real-ripgrep-3419-task.md`
 - generated HTML: `demo/real-click-3571.html`
 - generated HTML: `demo/real-ky-863.html`
+- generated HTML: `demo/real-ripgrep-3419.html`
 
 The Click smoke found plausible files first: `src/click/termui.py`, `src/click/_termui_impl.py`, and `tests/test_termui.py`. The ky smoke found `source/types/hooks.ts` first for a TypeScript hook typing issue.
+The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-walk nondeterminism bug.
 
 ## Installation
 
@@ -211,7 +215,7 @@ You can also reuse the composite action directly:
 
 - Add config for ignored paths, command preferences, and ranking boosts.
 - Add optional `git diff` context for issue fixes already in progress.
-- Add more real-repo fixtures for Go and Rust.
+- Add more real-repo fixtures for Go.
 
 ## Contributing
 
