@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue Agent Pack - `click.progressbar` doesn&#x27;t show full completion when using `show_pos=True` combined with `update_min_steps`</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #596575;
+      --border: #d9e0ea;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --ink: #111827;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      padding: 24px;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: 38px;
+      letter-spacing: 0;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+    h3 {
+      font-size: 16px;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      max-width: 820px;
+    }
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin: 10px 6px 0 0;
+      color: var(--accent);
+      background: #eefaf8;
+      font-size: 13px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+    .metric strong {
+      display: block;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    section, article {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .full {
+      grid-column: 1 / -1;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #f2f4f1;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .score {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    .body-excerpt {
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    a {
+      color: var(--accent);
+    }
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Issue Agent Pack</h1>
+      <p class="subtitle">`click.progressbar` doesn&#x27;t show full completion when using `show_pos=True` combined with `update_min_steps`</p>
+      <span class="pill">bug</span>
+      <div class="metrics">
+        <div class="metric"><strong>8</strong><span>likely files</span></div>
+        <div class="metric"><strong>3</strong><span>commands</span></div>
+        <div class="metric"><strong>0</strong><span>instruction files</span></div>
+      </div>
+    </header>
+    <div class="grid">
+      <div>
+        <section>
+          <h2>Issue summary</h2>
+          <p><a href="https://github.com/pallets/click/issues/3571">https://github.com/pallets/click/issues/3571</a></p>
+          <p class="body-excerpt">Using a `click.progressbar` with:
+- `update_min_steps` which isn&#x27;t a divisor of `length`
+- `show_pos=True`
+
+won&#x27;t show full completion at the end. This can be reproduced as follows:
+
+```python
+import time
+
+import click
+
+with click.progressbar(
+    range(20),
+    show_pos=True,
+    update_min_steps=7,
+) as bar:
+    for i in bar:
+        time.sleep(0.1)
+```
+
+with (final) output in the terminal
+
+```text
+  [####################################]  14/20
+```
+
+**Expected behaviour**: I had expected the output to show `20/20` at the end.
+This would be consistent with the default percentage formatting, as can be seen by commenting the line `show_pos=True` and re-running the reproduction:
+
+```text
+  [####################################]  100%
+```
+
+Environment:
+
+- Python version: tested with 3.12.3 and 3.14.3
+- Click version: 8.4.1</p>
+        </section>
+        <section>
+          <h2>Likely files</h2>
+
+    <article>
+      <h3><code>src/click/termui.py</code></h3>
+      <p class="score">Score 43</p>
+      <ul><li>content mentions: min, percentage, pos, progressbar, steps, terminal, time, update</li></ul>
+      <pre>L26: from ._termui_impl import ProgressBar
+L141: :param confirmation_prompt: Prompt a second time to confirm the
+L345: def progressbar(</pre>
+    </article>
+
+
+    <article>
+      <h3><code>src/click/_termui_impl.py</code></h3>
+      <p class="score">Score 39</p>
+      <ul><li>content mentions: min, pos, progressbar, steps, terminal, time, update</li></ul>
+      <pre>L3: import time of Click down, some infrequently used functionality is
+L16: import time
+L57: class ProgressBar(t.Generic[V]):</pre>
+    </article>
+
+
+    <article>
+      <h3><code>tests/test_termui.py</code></h3>
+      <p class="score">Score 34</p>
+      <ul><li>content mentions: isn, min, pos, progressbar, steps, time, update</li><li>test file may need a regression case</li></ul>
+      <pre>L9: import time
+L25: self.now = time.time()
+L27: def advance_time(self, seconds=1):</pre>
+    </article>
+
+
+    <article>
+      <h3><code>tests/test_formatting.py</code></h3>
+      <p class="score">Score 26</p>
+      <ul><li>path matches: formatting</li><li>content mentions: formatting, terminal</li><li>test file may need a regression case</li></ul>
+      <pre>L30: result = runner.invoke(cli, [&quot;--help&quot;], terminal_width=60)
+L76: result = runner.invoke(cli, [&quot;a-very-long&quot;, &quot;command&quot;, &quot;--help&quot;], terminal_width=54)
+L110: cli, [&quot;a-very-very-very-long&quot;, &quot;command&quot;, &quot;--help&quot;], terminal_width=54</pre>
+    </article>
+
+
+    <article>
+      <h3><code>src/click/testing.py</code></h3>
+      <p class="score">Score 24</p>
+      <ul><li>content mentions: formatting, terminal, update</li><li>test file may need a regression case</li></ul>
+      <pre>L15: from . import formatting
+L238: user would see  it in its terminal.
+L284: &quot;&quot;&quot;The terminal output as unicode string, as the user would see it.</pre>
+    </article>
+
+
+    <article>
+      <h3><code>tests/test_shell_completion.py</code></h3>
+      <p class="score">Score 24</p>
+      <ul><li>path matches: completion</li><li>content mentions: completion, isn, update</li><li>test file may need a regression case</li></ul>
+      <pre>L8: import click.shell_completion
+L13: from click.shell_completion import add_completion_class
+L14: from click.shell_completion import CompletionItem</pre>
+    </article>
+
+
+    <article>
+      <h3><code>src/click/shell_completion.py</code></h3>
+      <p class="score">Score 22</p>
+      <ul><li>path matches: completion</li><li>content mentions: completion, follows, formatting, isn</li></ul>
+      <pre>L26: &quot;&quot;&quot;Perform shell completion for the given CLI program.
+L33: the completion instruction.
+L34: :param instruction: Value of ``complete_var`` with the completion</pre>
+    </article>
+
+
+    <article>
+      <h3><code>tests/typing/typing_progressbar.py</code></h3>
+      <p class="score">Score 21</p>
+      <ul><li>path matches: progressbar</li><li>content mentions: progressbar</li><li>test file may need a regression case</li></ul>
+      <pre>L5: from click import progressbar
+L6: from click._termui_impl import ProgressBar
+L10: with progressbar(length=5) as bar:</pre>
+    </article>
+
+        </section>
+      </div>
+      <aside>
+        <section>
+          <h2>Commands</h2>
+          <ul><li><code>python -m pip install .</code></li><li><code>python -m pytest</code></li><li><code>python -m unittest discover -s tests</code></li></ul>
+        </section>
+        <section>
+          <h2>Acceptance criteria</h2>
+          <ul><li>Resolve the behavior described by: `click.progressbar` doesn&#x27;t show full completion when using `show_pos=True` combined with `update_min_steps`.</li><li>Add or update the smallest relevant tests for the changed behavior.</li><li>Run the suggested verification commands and report any command that cannot run.</li></ul>
+        </section>
+        <section>
+          <h2>Risk areas</h2>
+          <ul><li>No AGENTS.md or common agent instruction file was detected.</li></ul>
+        </section>
+        <section>
+          <h2>Repo Instructions</h2>
+          <p>No agent instruction file detected.</p>
+        </section>
+      </aside>
+      <section class="full">
+        <h2>Agent-ready prompt</h2>
+        <pre>Work as a pragmatic senior engineer in this repo.
+
+Issue: `click.progressbar` doesn&#x27;t show full completion when using `show_pos=True` combined with `update_min_steps`
+URL: https://github.com/pallets/click/issues/3571
+Labels: bug
+
+Likely relevant files:
+- src/click/termui.py (score 43): content mentions: min, percentage, pos, progressbar, steps, terminal, time, update
+- src/click/_termui_impl.py (score 39): content mentions: min, pos, progressbar, steps, terminal, time, update
+- tests/test_termui.py (score 34): content mentions: isn, min, pos, progressbar, steps, time, update; test file may need a regression case
+- tests/test_formatting.py (score 26): path matches: formatting; content mentions: formatting, terminal; test file may need a regression case
+- src/click/testing.py (score 24): content mentions: formatting, terminal, update; test file may need a regression case
+- tests/test_shell_completion.py (score 24): path matches: completion; content mentions: completion, isn, update; test file may need a regression case
+- src/click/shell_completion.py (score 22): path matches: completion; content mentions: completion, follows, formatting, isn
+- tests/typing/typing_progressbar.py (score 21): path matches: progressbar; content mentions: progressbar; test file may need a regression case
+
+Suggested commands:
+- `python -m pip install .`
+- `python -m pytest`
+- `python -m unittest discover -s tests`
+
+Acceptance criteria:
+- Resolve the behavior described by: `click.progressbar` doesn&#x27;t show full completion when using `show_pos=True` combined with `update_min_steps`.
+- Add or update the smallest relevant tests for the changed behavior.
+- Run the suggested verification commands and report any command that cannot run.
+
+Risks:
+- No AGENTS.md or common agent instruction file was detected.
+
+Keep the change minimal. Do not rewrite unrelated code. Verify before final response.</pre>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

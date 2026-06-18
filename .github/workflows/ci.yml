@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package
+        run: python -m pip install .
+      - name: Run tests
+        run: python -m unittest discover -s tests
+      - name: Run CLI markdown smoke check
+        run: issue-to-agent examples/issue-checkout-timeout.md --repo examples/mini-repo --max-files 5
+      - name: Run CLI JSON smoke check
+        run: issue-to-agent examples/issue-checkout-timeout.md --repo examples/mini-repo --format json --output /tmp/issue-agent-pack.json
+      - name: Validate JSON output
+        run: python -m json.tool /tmp/issue-agent-pack.json
+      - name: Run CLI HTML smoke check
+        run: issue-to-agent examples/issue-checkout-timeout.md --repo examples/mini-repo --format html --output /tmp/issue-agent-pack.html
+      - name: Compile sources
+        run: python -m compileall src tests

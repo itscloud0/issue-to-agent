@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+node_modules/
+.DS_Store
+ISSUE_AGENT_PACK.md
+issue-agent-pack.html

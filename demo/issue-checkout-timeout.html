@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue Agent Pack - Checkout retry fails after payment timeout</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #596575;
+      --border: #d9e0ea;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --ink: #111827;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      padding: 24px;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: 38px;
+      letter-spacing: 0;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+    h3 {
+      font-size: 16px;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      max-width: 820px;
+    }
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin: 10px 6px 0 0;
+      color: var(--accent);
+      background: #eefaf8;
+      font-size: 13px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+    .metric strong {
+      display: block;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    section, article {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .full {
+      grid-column: 1 / -1;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #f2f4f1;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .score {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    .body-excerpt {
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    a {
+      color: var(--accent);
+    }
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Issue Agent Pack</h1>
+      <p class="subtitle">Checkout retry fails after payment timeout</p>
+
+      <div class="metrics">
+        <div class="metric"><strong>5</strong><span>likely files</span></div>
+        <div class="metric"><strong>2</strong><span>commands</span></div>
+        <div class="metric"><strong>1</strong><span>instruction files</span></div>
+      </div>
+    </header>
+    <div class="grid">
+      <div>
+        <section>
+          <h2>Issue summary</h2>
+
+          <p class="body-excerpt">When the payment gateway returns a timeout during checkout, the API returns a 500 and the cart is marked as paid.
+
+Expected behavior:
+
+- [ ] A timeout should leave the cart unpaid.
+- [ ] The checkout endpoint should return a retryable error.
+- [ ] Add a regression test for the timeout path.
+
+Notes:
+
+- This started after the payment retry code was added.
+- It may be in the checkout service rather than the HTTP route.</p>
+        </section>
+        <section>
+          <h2>Likely files</h2>
+
+    <article>
+      <h3><code>tests/test_checkout.py</code></h3>
+      <p class="score">Score 39</p>
+      <ul><li>path matches: checkout, test</li><li>content mentions: cart, checkout, gateway, paid, payment, test, timeout, unpaid</li><li>test file may need a regression case</li></ul>
+      <pre>L3: from shop.cart import Cart
+L4: from shop.checkout import PaymentTimeout, RetryableCheckoutError, checkout
+L9: raise PaymentTimeout(&quot;gateway timed out&quot;)</pre>
+    </article>
+
+
+    <article>
+      <h3><code>src/shop/checkout.py</code></h3>
+      <p class="score">Score 29</p>
+      <ul><li>path matches: checkout</li><li>content mentions: cart, checkout, gateway, paid, payment, retry, timeout</li></ul>
+      <pre>L9: def checkout(cart, gateway):
+L11: gateway.charge(cart.total)
+L13: cart.mark_failed(&quot;payment timeout&quot;)</pre>
+    </article>
+
+
+    <article>
+      <h3><code>src/shop/cart.py</code></h3>
+      <p class="score">Score 19</p>
+      <ul><li>path matches: cart</li><li>content mentions: cart, paid</li></ul>
+      <pre>L1: class Cart:
+L4: self.paid = False
+L7: def mark_paid(self):</pre>
+    </article>
+
+
+    <article>
+      <h3><code>AGENTS.md</code></h3>
+      <p class="score">Score 3</p>
+      <ul><li>content mentions: behavior, checkout, payment</li></ul>
+      <pre>L3: - Keep checkout changes small.
+L4: - Add tests before changing payment behavior.</pre>
+    </article>
+
+
+    <article>
+      <h3><code>.github/workflows/ci.yml</code></h3>
+      <p class="score">Score 2</p>
+      <ul><li>content mentions: checkout, test</li></ul>
+      <pre>L8: test:
+L11: - uses: actions/checkout@v5</pre>
+    </article>
+
+        </section>
+      </div>
+      <aside>
+        <section>
+          <h2>Commands</h2>
+          <ul><li><code>python -m pip install .</code></li><li><code>python -m unittest discover -s tests</code></li></ul>
+        </section>
+        <section>
+          <h2>Acceptance criteria</h2>
+          <ul><li>A timeout should leave the cart unpaid.</li><li>The checkout endpoint should return a retryable error.</li><li>Add a regression test for the timeout path.</li></ul>
+        </section>
+        <section>
+          <h2>Risk areas</h2>
+          <ul><li>Sensitive area mentioned: payment. Avoid broad auth, billing, migration, or secret-handling changes.</li></ul>
+        </section>
+        <section>
+          <h2>Repo Instructions</h2>
+
+        <div class="instruction">
+          <h3>AGENTS.md</h3>
+          <pre># Agent Instructions
+
+- Keep checkout changes small.
+- Add tests before changing payment behavior.
+- Do not touch billing migrations in the first pass.</pre>
+        </div>
+
+        </section>
+      </aside>
+      <section class="full">
+        <h2>Agent-ready prompt</h2>
+        <pre>Work as a pragmatic senior engineer in this repo.
+
+Issue: Checkout retry fails after payment timeout
+
+Likely relevant files:
+- tests/test_checkout.py (score 39): path matches: checkout, test; content mentions: cart, checkout, gateway, paid, payment, test, timeout, unpaid; test file may need a regression case
+- src/shop/checkout.py (score 29): path matches: checkout; content mentions: cart, checkout, gateway, paid, payment, retry, timeout
+- src/shop/cart.py (score 19): path matches: cart; content mentions: cart, paid
+- AGENTS.md (score 3): content mentions: behavior, checkout, payment
+- .github/workflows/ci.yml (score 2): content mentions: checkout, test
+
+Suggested commands:
+- `python -m pip install .`
+- `python -m unittest discover -s tests`
+
+Acceptance criteria:
+- A timeout should leave the cart unpaid.
+- The checkout endpoint should return a retryable error.
+- Add a regression test for the timeout path.
+
+Risks:
+- Sensitive area mentioned: payment. Avoid broad auth, billing, migration, or secret-handling changes.
+
+Repo instructions to honor:
+- AGENTS.md: # Agent Instructions
+
+- Keep checkout changes small.
+- Add tests before changing payment behavior.
+- Do not touch billing migrations in the first pass.
+
+Keep the change minimal. Do not rewrite unrelated code. Verify before final response.</pre>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

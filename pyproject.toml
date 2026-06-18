@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "issue-to-agent"
+version = "0.1.0"
+description = "Turn GitHub issues into scoped task packs for coding agents."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Ilias Sorokin" }]
+keywords = [
+  "coding-agents",
+  "github-issues",
+  "agent-workflows",
+  "developer-tools",
+  "repo-analysis",
+  "codex",
+  "claude-code",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Bug Tracking",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.scripts]
+issue-to-agent = "issue_to_agent.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/itscloud0/issue-to-agent"
+Issues = "https://github.com/itscloud0/issue-to-agent/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

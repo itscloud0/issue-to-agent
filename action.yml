@@ -1,0 +1,84 @@
+name: issue-to-agent
+description: Generate an agent-ready task pack from issue text and repository context.
+author: Ilias Sorokin
+
+inputs:
+  issue-title:
+    description: GitHub issue title.
+    required: true
+  issue-body:
+    description: GitHub issue body.
+    required: false
+    default: ""
+  issue-url:
+    description: GitHub issue URL.
+    required: false
+    default: ""
+  issue-number:
+    description: GitHub issue number.
+    required: false
+    default: ""
+  output-path:
+    description: Path for the generated task pack.
+    required: false
+    default: ISSUE_AGENT_TASK.md
+  format:
+    description: "Output format: markdown, json, or html."
+    required: false
+    default: markdown
+  max-files:
+    description: Maximum ranked files to include.
+    required: false
+    default: "8"
+  profile:
+    description: "Prompt profile: codex, claude, cursor, or generic."
+    required: false
+    default: codex
+
+runs:
+  using: composite
+  steps:
+    - name: Install issue-to-agent
+      shell: bash
+      run: python -m pip install "$GITHUB_ACTION_PATH"
+
+    - name: Write issue input
+      shell: bash
+      env:
+        ISSUE_TITLE: ${{ inputs.issue-title }}
+        ISSUE_BODY: ${{ inputs.issue-body }}
+        ISSUE_URL: ${{ inputs.issue-url }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+      run: |
+        python - <<'PY'
+        import os
+        from pathlib import Path
+
+        title = os.environ.get("ISSUE_TITLE", "").strip() or "Untitled issue"
+        body = os.environ.get("ISSUE_BODY", "").strip()
+        url = os.environ.get("ISSUE_URL", "").strip()
+        number = os.environ.get("ISSUE_NUMBER", "").strip()
+
+        lines = [f"# {title}", ""]
+        if url:
+            lines.extend([f"Source: {url}", ""])
+        if number:
+            lines.extend([f"Issue number: {number}", ""])
+        lines.append(body or "No issue body provided.")
+
+        issue_path = Path(os.environ["RUNNER_TEMP"]) / "issue-to-agent-input.md"
+        issue_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+
+        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+            env_file.write(f"ISSUE_TO_AGENT_INPUT={issue_path}\n")
+        PY
+
+    - name: Generate task pack
+      shell: bash
+      run: |
+        issue-to-agent "$ISSUE_TO_AGENT_INPUT" \
+          --repo "$GITHUB_WORKSPACE" \
+          --format "${{ inputs.format }}" \
+          --max-files "${{ inputs.max-files }}" \
+          --profile "${{ inputs.profile }}" \
+          --output "${{ inputs.output-path }}"
