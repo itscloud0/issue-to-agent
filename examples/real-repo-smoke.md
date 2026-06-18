@@ -121,3 +121,33 @@ npm run build
 
 - The ky test suite was not run. This smoke validates task-pack generation, not the upstream type fix.
 - The generated task pack was not posted to GitHub.
+
+## Target 3
+
+- Repository: `BurntSushi/ripgrep`
+- Clone URL: `https://github.com/BurntSushi/ripgrep.git`
+- Issue: https://github.com/BurntSushi/ripgrep/issues/3419
+- Issue title: `Nondeterminism in ignore::WalkBuilder parallel multi-root walk`
+
+## Commands Run
+
+issue-to-agent examples/issue-ripgrep-3419.md --repo ./ripgrep --output examples/real-ripgrep-3419-task.md
+
+issue-to-agent examples/issue-ripgrep-3419.md --repo ./ripgrep --format html --output demo/real-ripgrep-3419.html
+
+## Generated Outputs
+
+- Markdown task pack: `examples/real-ripgrep-3419-task.md`
+- HTML report: `demo/real-ripgrep-3419.html`
+
+## Findings
+
+- The ranking correctly surfaced `crates/ignore/src/walk.rs` as the top result.
+- Additional ignore-related implementation files were ranked near the top.
+- The generated task pack identified plausible verification commands (`cargo test`, `cargo build`).
+- This provides a Rust real-repo smoke fixture demonstrating task-pack generation outside Python and TypeScript ecosystems.
+
+## Not Verified
+
+- Upstream tests were not executed.
+- The upstream bug fix was not revalidated.
