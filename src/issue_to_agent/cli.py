@@ -6,8 +6,7 @@ from pathlib import Path
 
 from .issue import load_issue
 from .pack import build_task_pack
-from .render import render_html, render_json, render_markdown
-
+from .render import render_html, render_json, render_markdown, render_prompt
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -25,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--format",
-        choices=("markdown", "json", "html"),
+        choices=("markdown", "json", "html", "prompt"),
         default="markdown",
         help="Output format. Defaults to markdown.",
     )
@@ -70,6 +69,8 @@ def main(argv: list[str] | None = None) -> int:
         output = render_json(pack)
     elif args.format == "html":
         output = render_html(pack)
+    elif args.format == "prompt":
+        output = render_prompt(pack)
     else:
         output = render_markdown(pack)
 

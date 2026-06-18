@@ -10,7 +10,7 @@ from pathlib import Path
 from issue_to_agent.cli import main
 from issue_to_agent.issue import parse_github_issue_ref, parse_issue_text
 from issue_to_agent.pack import build_task_pack
-from issue_to_agent.render import render_html, render_json, render_markdown
+from issue_to_agent.render import render_html, render_json, render_markdown, render_prompt
 from issue_to_agent.repo import scan_repository
 
 
@@ -121,10 +121,13 @@ class IssueToAgentTests(unittest.TestCase):
         markdown = render_markdown(pack)
         payload = json.loads(render_json(pack))
         html = render_html(pack)
-
+        prompt_only = render_prompt(pack)
         self.assertIn("Ready-To-Paste Agent Prompt", markdown)
         self.assertEqual(payload["issue"]["title"], issue.title)
         self.assertIn("<!doctype html>", html)
+        self.assertEqual(prompt_only, pack.prompt)
+        self.assertNotIn("Ready-To-Paste Agent Prompt", prompt_only)
+        self.assertIn("Issue:", prompt_only)
         for section in (
             "Issue summary",
             "Likely files",
@@ -154,7 +157,27 @@ class IssueToAgentTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             payload = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(payload["issue"]["title"], "Checkout retry fails after payment timeout")
+    def test_cli_writes_prompt_only_output(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = Path(tmpdir) / "prompt.txt"
 
+            exit_code = main(
+                [
+                    str(EXAMPLE_ISSUE),
+                    "--repo",
+                    str(EXAMPLE_REPO),
+                    "--format",
+                    "prompt",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(exit_code, 0)
+            content = output.read_text(encoding="utf-8")
+            self.assertNotIn("Ready-To-Paste Agent Prompt", content)
+            self.assertIn("Checkout retry fails after payment timeout", content)
+            
     def test_cli_rejects_bad_max_files(self):
         stderr = StringIO()
         with redirect_stderr(stderr), self.assertRaises(SystemExit):
