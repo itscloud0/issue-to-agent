@@ -92,7 +92,7 @@ I included real smokes against `pallets/click#3571` and `sindresorhus/ky#863`; f
 
 1. Add a Go or Rust real-repo smoke fixture with generated HTML output.
 2. Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.
-3. Add `--print-prompt-only` for clipboard workflows.
+3. Add clipboard-friendly examples for `--format prompt`.
 
 ## Roadmap Issues
 

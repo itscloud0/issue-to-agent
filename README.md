@@ -110,6 +110,12 @@ HTML for maintainers:
 issue-to-agent OWNER/REPO#123 --repo . --format html --output issue-agent-task.html
 ```
 
+Prompt-only output for direct agent handoff:
+
+```bash
+issue-to-agent OWNER/REPO#123 --repo . --format prompt --output agent-prompt.txt
+```
+
 ## Agent Skills
 
 See `AGENT_SKILLS.md`.
@@ -205,7 +211,6 @@ You can also reuse the composite action directly:
 
 - Add config for ignored paths, command preferences, and ranking boosts.
 - Add optional `git diff` context for issue fixes already in progress.
-- Add `--print-prompt-only` for direct clipboard workflows.
 - Add more real-repo fixtures for Go and Rust.
 
 ## Contributing
