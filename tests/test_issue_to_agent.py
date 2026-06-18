@@ -177,7 +177,7 @@ class IssueToAgentTests(unittest.TestCase):
             content = output.read_text(encoding="utf-8")
             self.assertNotIn("Ready-To-Paste Agent Prompt", content)
             self.assertIn("Checkout retry fails after payment timeout", content)
-            
+
     def test_cli_rejects_bad_max_files(self):
         stderr = StringIO()
         with redirect_stderr(stderr), self.assertRaises(SystemExit):
