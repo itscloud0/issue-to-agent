@@ -1,0 +1,831 @@
+{
+  "baseline": {
+    "mean_irrelevant_file_rate": 0.9304,
+    "mean_top10_recall": 0.3667,
+    "mean_top5_recall": 0.3333
+  },
+  "cases": [
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "2468b70997a6ec27ced4b4867954c90da3f92075",
+      "baseline_irrelevant_file_rate": 0.9,
+      "baseline_top10_recall": 0.5,
+      "baseline_top5_recall": 0.5,
+      "baseline_top_files": [
+        "src/click/_termui_impl.py",
+        "src/click/shell_completion.py",
+        "src/click/termui.py",
+        ".devcontainer/on-create-command.sh",
+        "docs/click-concepts.md",
+        "docs/command-line-reference.md",
+        "docs/extending-click.md",
+        "docs/shell-completion.md",
+        "examples/termui/pyproject.toml",
+        "examples/termui/termui.py"
+      ],
+      "closing_pr_url": "https://github.com/pallets/click/pull/3186",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "python -m pip install .",
+        "python -m pytest",
+        "python -m unittest discover -s tests"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "CHANGES.rst",
+        "src/click/_termui_impl.py"
+      ],
+      "id": "pallets-click-3164",
+      "issue_url": "https://github.com/pallets/click/issues/3164",
+      "language": "Python",
+      "output_complete": true,
+      "repo": "pallets/click",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 0.5,
+      "tool_top5_recall": 0.5,
+      "tool_top_files": [
+        "src/click/_termui_impl.py",
+        "src/click/termui.py",
+        "tests/test_termui.py",
+        "src/click/shell_completion.py",
+        "src/click/types.py",
+        "tests/test_utils.py",
+        "src/click/utils.py",
+        "src/click/_compat.py",
+        "src/click/testing.py",
+        "src/click/_winconsole.py"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "bc36cd1a2b3bc18f401a98476154dbc5a2d212c9",
+      "baseline_irrelevant_file_rate": 0.9,
+      "baseline_top10_recall": 0.5,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        "docs/command-line-reference.md",
+        ".devcontainer/on-create-command.sh",
+        ".github/workflows/pre-commit.yaml",
+        ".pre-commit-config.yaml",
+        "docs/shell-completion.md",
+        "docs/support-multiple-versions.md",
+        "docs/unicode-support.md",
+        "examples/completion/completion.py",
+        "examples/completion/pyproject.toml",
+        "src/click/shell_completion.py"
+      ],
+      "closing_pr_url": "https://github.com/pallets/click/pull/3504",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "python -m pip install .",
+        "python -m pytest",
+        "python -m unittest discover -s tests"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "src/click/shell_completion.py",
+        "tests/test_shell_completion.py"
+      ],
+      "id": "pallets-click-3502",
+      "issue_url": "https://github.com/pallets/click/issues/3502",
+      "language": "Python",
+      "output_complete": true,
+      "repo": "pallets/click",
+      "tool_irrelevant_file_rate": 0.8,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "src/click/shell_completion.py",
+        "tests/test_termui.py",
+        "tests/test_shell_completion.py",
+        "tests/test_options.py",
+        "src/click/termui.py",
+        "src/click/testing.py",
+        "src/click/_termui_impl.py",
+        "src/click/types.py",
+        "src/click/utils.py",
+        "tests/test_formatting.py"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "fed9049f7a07550d560a91b30c5b0b3e17d54981",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        "tests/test_info_dict.py",
+        ".devcontainer/on-create-command.sh",
+        "tests/test_command_decorators.py",
+        "tests/test_context.py",
+        "tests/test_parser.py",
+        "docs/command-line-reference.md",
+        "docs/documentation.md",
+        "docs/parameter-types.md",
+        "docs/why.md",
+        "examples/complex/complex/__init__.py"
+      ],
+      "closing_pr_url": "https://github.com/pallets/click/pull/3211",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "python -m pip install .",
+        "python -m pytest",
+        "python -m unittest discover -s tests"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "CHANGES.rst",
+        "src/click/types.py",
+        "tests/test_types.py"
+      ],
+      "id": "pallets-click-3105",
+      "issue_url": "https://github.com/pallets/click/issues/3105",
+      "language": "Python",
+      "output_complete": true,
+      "repo": "pallets/click",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 0.3333,
+      "tool_top5_recall": 0.3333,
+      "tool_top_files": [
+        "src/click/types.py",
+        "tests/test_options.py",
+        "src/click/utils.py",
+        "tests/test_arguments.py",
+        "tests/test_info_dict.py",
+        "src/click/termui.py",
+        "src/click/_termui_impl.py",
+        "src/click/parser.py",
+        "tests/test_termui.py",
+        "src/click/testing.py"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "7c99ebe23b931f27562d926814423cce85fd9766",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        ".github/ISSUE_TEMPLATE/bug-report.md",
+        "docs/arguments.md",
+        "docs/click-concepts.md",
+        "docs/command-line-reference.md",
+        "docs/commands-and-groups.md",
+        "docs/commands.md",
+        "docs/extending-click.md",
+        "examples/complex/complex/cli.py",
+        "examples/complex/complex/commands/__init__.py",
+        "examples/complex/complex/commands/cmd_init.py"
+      ],
+      "closing_pr_url": "https://github.com/pallets/click/pull/3434",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "python -m pip install .",
+        "python -m pytest",
+        "python -m unittest discover -s tests"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "CHANGES.rst",
+        "src/click/formatting.py",
+        "tests/test_formatting.py"
+      ],
+      "id": "pallets-click-3360",
+      "issue_url": "https://github.com/pallets/click/issues/3360",
+      "language": "Python",
+      "output_complete": true,
+      "repo": "pallets/click",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 0.3333,
+      "tool_top5_recall": 0.3333,
+      "tool_top_files": [
+        "tests/test_options.py",
+        "tests/test_termui.py",
+        "tests/test_formatting.py",
+        "src/click/testing.py",
+        "tests/test_arguments.py",
+        "src/click/termui.py",
+        "tests/test_commands.py",
+        "tests/test_utils.py",
+        "src/click/types.py",
+        "tests/test_context.py"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "c69643b60cf971cd5d8e5d3902632807ceab9b8f",
+      "baseline_irrelevant_file_rate": 0.8,
+      "baseline_top10_recall": 0.5,
+      "baseline_top5_recall": 0.5,
+      "baseline_top_files": [
+        "src/click/shell_completion.py",
+        "src/click/types.py",
+        "tests/test_shell_completion.py",
+        ".github/ISSUE_TEMPLATE/bug-report.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        ".github/ISSUE_TEMPLATE/feature-request.md",
+        ".github/pull_request_template.md",
+        "docs/command-line-reference.md",
+        "docs/shell-completion.md",
+        "src/click/__init__.py"
+      ],
+      "closing_pr_url": "https://github.com/pallets/click/pull/3126",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "python -m pip install .",
+        "python -m pytest",
+        "python -m unittest discover -s tests"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        ".gitignore",
+        "CHANGES.rst",
+        "src/click/shell_completion.py",
+        "tests/test_shell_completion.py"
+      ],
+      "id": "pallets-click-3043",
+      "issue_url": "https://github.com/pallets/click/issues/3043",
+      "language": "Python",
+      "output_complete": true,
+      "repo": "pallets/click",
+      "tool_irrelevant_file_rate": 0.8,
+      "tool_top10_recall": 0.5,
+      "tool_top5_recall": 0.5,
+      "tool_top_files": [
+        "src/click/shell_completion.py",
+        "tests/test_options.py",
+        "tests/test_shell_completion.py",
+        "src/click/types.py",
+        "src/click/termui.py",
+        "docs/shell-completion.md",
+        "tests/test_termui.py",
+        "src/click/_termui_impl.py",
+        "docs/advanced.md",
+        "tests/test_commands.py"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "585ebcb80545d784b31033e5a70326a0eb202468",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        ".github/workflows/main.yml",
+        "test/main.ts",
+        "test/prefix-url.ts",
+        ".github/funding.yml",
+        ".github/security.md",
+        "test/browser.ts",
+        "test/fetch.ts",
+        "test/headers.ts",
+        "test/helpers/create-http-test-server.ts",
+        "test/helpers/index.ts"
+      ],
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/582",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "npm install",
+        "npm run test",
+        "npm run build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "source/core/constants.ts"
+      ],
+      "id": "sindresorhus-ky-581",
+      "issue_url": "https://github.com/sindresorhus/ky/issues/581",
+      "language": "TypeScript",
+      "output_complete": true,
+      "repo": "sindresorhus/ky",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 0.0,
+      "tool_top_files": [
+        "test/main.ts",
+        ".github/workflows/main.yml",
+        "source/types/ResponsePromise.ts",
+        "test/browser.ts",
+        "test/headers.ts",
+        "source/core/constants.ts",
+        "source/types/options.ts",
+        "source/types/request.ts",
+        "source/utils/delay.ts",
+        "package.json"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "eb704826f2d1e4eb1ba193c209efa22823fd673d",
+      "baseline_irrelevant_file_rate": 0.8889,
+      "baseline_top10_recall": 1.0,
+      "baseline_top5_recall": 1.0,
+      "baseline_top_files": [
+        "source/types/request.ts",
+        "source/types/ResponsePromise.ts",
+        "source/types/common.ts",
+        "source/types/hooks.ts",
+        "source/types/ky.ts",
+        "source/types/options.ts",
+        "source/types/response.ts",
+        "source/types/retry.ts",
+        "source/utils/types.ts"
+      ],
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/623",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "npm install",
+        "npm run test",
+        "npm run build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "source/types/request.ts"
+      ],
+      "id": "sindresorhus-ky-622",
+      "issue_url": "https://github.com/sindresorhus/ky/issues/622",
+      "language": "TypeScript",
+      "output_complete": true,
+      "repo": "sindresorhus/ky",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "test/browser.ts",
+        "source/types/request.ts",
+        "source/types/options.ts",
+        "test/headers.ts",
+        "package.json",
+        "source/core/Ky.ts",
+        "test/helpers/with-page.ts",
+        "source/types/ResponsePromise.ts",
+        "source/core/constants.ts",
+        "test/main.ts"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "ec10a6821808fb61d9aca1707b60ee5982ff09e3",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        "test/helpers/parse-body.ts",
+        "test/formdata-searchparams.ts",
+        "test/hooks.ts",
+        ".github/funding.yml",
+        ".github/security.md",
+        ".github/workflows/main.yml",
+        "package.json",
+        "source/types/hooks.ts",
+        "source/types/options.ts",
+        "source/types/request.ts"
+      ],
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/764",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "npm install",
+        "npm run test",
+        "npm run build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "readme.md"
+      ],
+      "id": "sindresorhus-ky-645",
+      "issue_url": "https://github.com/sindresorhus/ky/issues/645",
+      "language": "TypeScript",
+      "output_complete": true,
+      "repo": "sindresorhus/ky",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "test/headers.ts",
+        "readme.md",
+        "test/formdata-searchparams.ts",
+        "source/types/options.ts",
+        "source/core/Ky.ts",
+        "test/browser.ts",
+        "test/main.ts",
+        "test/hooks.ts",
+        "source/types/hooks.ts",
+        "test/helpers/parse-body.ts"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "3ba40cc6333cf1847c02c51744e22ab7c04407f5",
+      "baseline_irrelevant_file_rate": 0.9,
+      "baseline_top10_recall": 1.0,
+      "baseline_top5_recall": 1.0,
+      "baseline_top_files": [
+        ".github/workflows/main.yml",
+        "source/core/Ky.ts",
+        "source/core/constants.ts",
+        "source/types/ResponsePromise.ts",
+        "source/types/options.ts",
+        "source/types/request.ts",
+        "source/types/response.ts",
+        "source/utils/options.ts",
+        ".github/funding.yml",
+        ".github/security.md"
+      ],
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/661",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "npm install",
+        "npm run test",
+        "npm run build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "source/core/Ky.ts"
+      ],
+      "id": "sindresorhus-ky-648",
+      "issue_url": "https://github.com/sindresorhus/ky/issues/648",
+      "language": "TypeScript",
+      "output_complete": true,
+      "repo": "sindresorhus/ky",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "source/core/Ky.ts",
+        "readme.md",
+        "source/types/options.ts",
+        "test/main.ts",
+        "source/core/constants.ts",
+        "source/types/ResponsePromise.ts",
+        "source/types/ky.ts",
+        "test/browser.ts",
+        "source/types/hooks.ts",
+        "test/headers.ts"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "5a3fc90ccba78d10809e48fa89cef722543c9597",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        ".github/workflows/main.yml",
+        ".github/funding.yml",
+        ".github/security.md",
+        "test/fetch.ts",
+        "test/helpers/create-http-test-server.ts",
+        "test/http-error.ts",
+        "test/main.ts"
+      ],
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/761",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "npm install",
+        "npm run test",
+        "npm run build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "readme.md"
+      ],
+      "id": "sindresorhus-ky-682",
+      "issue_url": "https://github.com/sindresorhus/ky/issues/682",
+      "language": "TypeScript",
+      "output_complete": true,
+      "repo": "sindresorhus/ky",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "readme.md",
+        ".github/workflows/main.yml",
+        "source/types/options.ts",
+        "test/headers.ts",
+        "test/fetch.ts",
+        "source/core/constants.ts",
+        "test/helpers/create-http-test-server.ts",
+        "source/types/ResponsePromise.ts",
+        "source/types/ky.ts",
+        "test/main.ts"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "94e4b8e301302097dad48b292560ce135c4d4926",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        ".github/ISSUE_TEMPLATE/feature_request.md",
+        "crates/regex/src/non_matching.rs",
+        "tests/feature.rs"
+      ],
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/1876",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "crates/ignore/src/default_types.rs"
+      ],
+      "id": "BurntSushi-ripgrep-1875",
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1875",
+      "language": "Rust",
+      "output_complete": true,
+      "repo": "BurntSushi/ripgrep",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 0.0,
+      "tool_top_files": [
+        ".github/ISSUE_TEMPLATE/feature_request.md",
+        "crates/core/app.rs",
+        "crates/core/args.rs",
+        "crates/ignore/src/types.rs",
+        "crates/ignore/src/walk.rs",
+        "crates/matcher/src/lib.rs",
+        "crates/ignore/src/default_types.rs",
+        "tests/feature.rs",
+        "crates/printer/src/summary.rs",
+        "crates/regex/src/matcher.rs"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "abf115228e886494e6198a64c519db7285ff29af",
+      "baseline_irrelevant_file_rate": 0.6667,
+      "baseline_top10_recall": 1.0,
+      "baseline_top5_recall": 1.0,
+      "baseline_top_files": [
+        "crates/ignore/src/default_types.rs",
+        "crates/ignore/src/types.rs",
+        "pkg/brew/ripgrep-bin.rb"
+      ],
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/1919",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "crates/ignore/src/default_types.rs"
+      ],
+      "id": "BurntSushi-ripgrep-1918",
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1918",
+      "language": "Rust",
+      "output_complete": true,
+      "repo": "BurntSushi/ripgrep",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "crates/ignore/src/types.rs",
+        "crates/ignore/src/default_types.rs",
+        "crates/core/app.rs",
+        "crates/ignore/src/walk.rs",
+        "crates/core/args.rs",
+        "crates/printer/src/json.rs",
+        "crates/ignore/src/dir.rs",
+        "crates/core/main.rs",
+        "crates/cli/src/decompress.rs",
+        "crates/globset/src/lib.rs"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "595e7845b87c1b9e6cfd4f1c23b3910dca3e15f0",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        "crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs",
+        "crates/ignore/Cargo.toml",
+        "crates/ignore/README.md",
+        "crates/ignore/examples/walk.rs",
+        "crates/ignore/src/default_types.rs",
+        "crates/ignore/src/dir.rs",
+        "crates/ignore/src/gitignore.rs",
+        "crates/ignore/src/lib.rs",
+        "crates/ignore/src/overrides.rs",
+        "crates/ignore/src/pathutil.rs"
+      ],
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/2462",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "crates/core/app.rs"
+      ],
+      "id": "BurntSushi-ripgrep-1962",
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1962",
+      "language": "Rust",
+      "output_complete": true,
+      "repo": "BurntSushi/ripgrep",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "crates/core/app.rs",
+        "CHANGELOG.md",
+        "GUIDE.md",
+        "FAQ.md",
+        "crates/core/args.rs",
+        "crates/ignore/src/walk.rs",
+        "crates/core/main.rs",
+        "tests/data/sherlock-nul.txt",
+        "tests/regression.rs",
+        "crates/cli/src/decompress.rs"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "009dda1488ac6a01725b3e49ec9b81a1edf8036d",
+      "baseline_irrelevant_file_rate": 0.9,
+      "baseline_top10_recall": 1.0,
+      "baseline_top5_recall": 1.0,
+      "baseline_top_files": [
+        "crates/regex/src/config.rs",
+        ".cargo/config.toml",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "crates/core/config.rs",
+        "crates/core/path_printer.rs",
+        "crates/core/search.rs",
+        "crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs",
+        "crates/regex/Cargo.toml",
+        "crates/regex/README.md",
+        "crates/regex/src/ast.rs"
+      ],
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/2070",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "crates/core/config.rs"
+      ],
+      "id": "BurntSushi-ripgrep-1990",
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1990",
+      "language": "Rust",
+      "output_complete": true,
+      "repo": "BurntSushi/ripgrep",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 0.0,
+      "tool_top_files": [
+        "crates/core/app.rs",
+        "crates/core/args.rs",
+        "crates/ignore/src/walk.rs",
+        "tests/data/sherlock-nul.txt",
+        "GUIDE.md",
+        "FAQ.md",
+        "crates/searcher/src/searcher/mod.rs",
+        "crates/cli/src/lib.rs",
+        "crates/core/config.rs",
+        "crates/cli/src/decompress.rs"
+      ]
+    },
+    {
+      "agent_instruction_detection_pass": true,
+      "base_ref": "5c42c8c48f4163ba7c0662cb70dbf61f9d670d9a",
+      "baseline_irrelevant_file_rate": 1.0,
+      "baseline_top10_recall": 0.0,
+      "baseline_top5_recall": 0.0,
+      "baseline_top_files": [
+        ".github/ISSUE_TEMPLATE/feature_request.md",
+        "crates/cli/src/decompress.rs",
+        "crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs",
+        "crates/printer/src/path.rs",
+        "tests/feature.rs"
+      ],
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/3181",
+      "command_detection_pass": true,
+      "detected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "detected_instruction_files": [],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": [],
+      "ground_truth_files": [
+        "crates/core/search.rs"
+      ],
+      "id": "BurntSushi-ripgrep-2111",
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/2111",
+      "language": "Rust",
+      "output_complete": true,
+      "repo": "BurntSushi/ripgrep",
+      "tool_irrelevant_file_rate": 0.9,
+      "tool_top10_recall": 1.0,
+      "tool_top5_recall": 1.0,
+      "tool_top_files": [
+        "crates/cli/src/decompress.rs",
+        "crates/core/search.rs",
+        "crates/core/flags/hiargs.rs",
+        "crates/searcher/src/searcher/mod.rs",
+        "crates/ignore/src/walk.rs",
+        "crates/printer/src/json.rs",
+        "tests/binary.rs",
+        "crates/core/flags/lowargs.rs",
+        "crates/searcher/src/testutil.rs",
+        "tests/misc.rs"
+      ]
+    }
+  ],
+  "comparisons": {
+    "agent_instruction_detection_accuracy": 1.0,
+    "command_detection_accuracy": 1.0,
+    "output_completeness_rate": 1.0,
+    "top10_cases_tool_beats_baseline": 9,
+    "top5_cases_tool_beats_baseline": 7
+  },
+  "duration_seconds": 1.234,
+  "fixture_count": 15,
+  "languages": [
+    "Python",
+    "Rust",
+    "TypeScript"
+  ],
+  "repository_count": 3,
+  "schema_version": 1,
+  "tool": {
+    "mean_irrelevant_file_rate": 0.8867,
+    "mean_top10_recall": 0.8444,
+    "mean_top5_recall": 0.6444
+  }
+}

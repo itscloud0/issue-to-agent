@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "retrieved_at": "2026-06-18",
+  "fixtures": [
+    {
+      "id": "pallets-click-3164",
+      "repo": "pallets/click",
+      "repo_url": "https://github.com/pallets/click.git",
+      "language": "Python",
+      "issue_number": 3164,
+      "issue_url": "https://github.com/pallets/click/issues/3164",
+      "issue_title": "`click.launch()` does not work for (non local) urls on Windows",
+      "issue_body": "Environment:\n\n- Python version: 3,13\n- Click version: 8.3.1\n- OS: Windows (11)\n\nclick.launch() (precisely: click._termui_impl.open_url()) does not work for (non local) urls on Windows.\ne.g. click.launch(\"http://www.python.org\") does not work.\n\nThe patch:\n\n```diff\n--- click/_termui_impl.py.org\t2025-12-03 16:55:34.202910500 +0100\n+++ click/_termui_impl.py\t2025-12-03 21:44:31.351834200 +0100\n@@ -707,7 +707,7 @@\n             args.append(\"\")\n             args.append(url)\n         try:\n-            return subprocess.call(args)\n+            return subprocess.call(args, shell=True)\n         except OSError:\n             # Command not found\n             return 127\n```",
+      "closed_at": "2026-04-29T23:25:39Z",
+      "closing_pr_number": 3186,
+      "closing_pr_url": "https://github.com/pallets/click/pull/3186",
+      "pr_base_ref": "2468b70997a6ec27ced4b4867954c90da3f92075",
+      "pr_head_ref": "3dbe4f81197e670cb6082d4ed6e157b08610a7aa",
+      "changed_files": [
+        "CHANGES.rst",
+        "src/click/_termui_impl.py"
+      ],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "pallets-click-3502",
+      "repo": "pallets/click",
+      "repo_url": "https://github.com/pallets/click.git",
+      "language": "Python",
+      "issue_number": 3502,
+      "issue_url": "https://github.com/pallets/click/issues/3502",
+      "issue_title": "fish completion is broken in 8.4.1",
+      "issue_body": "Commit 19fd4d6 (#3126) broke fish completion.\n\n## Unquoted `\\n`\n\n```diff\n-        set -l metadata (string split \",\" $completion);\n+        set -l metadata (string split \\n $completion);\n```\nWithout quotes, `\\n` is evaluated as a literal newline, which splits the command across lines in the generated script:\n```\n        set -l metadata (string split\n $completion);\n```\n\n## Command substitution flattens newlines\n\nEven if quoted, `\\n` fails as a separator. The Python side outputs:\n```python\n        return f\"{item.type}\\n{value}\\n{help_escaped}\"\n```\nBut when captured via command substitution in Fish, the newlines are flattened:\n```fish\n    set -l response (env %(complete_var)s=fish_complete COMP_WORDS=(commandline -cp) \\\nCOMP_CWORD=(commandline -t) %(prog_name)s);\n```\n\n---\n\nTo support multi-line, maybe we just need to escape `\\n` in help message while keeping the old separator? Not 100% sure.\n\nEither way, we should probably revert this change first to fix the broken completion",
+      "closed_at": "2026-05-23T07:05:18Z",
+      "closing_pr_number": 3504,
+      "closing_pr_url": "https://github.com/pallets/click/pull/3504",
+      "pr_base_ref": "bc36cd1a2b3bc18f401a98476154dbc5a2d212c9",
+      "pr_head_ref": "31eb1639bf5dd58166626ed77b13b7256e78fb0c",
+      "changed_files": [
+        "src/click/shell_completion.py",
+        "tests/test_shell_completion.py"
+      ],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "pallets-click-3105",
+      "repo": "pallets/click",
+      "repo_url": "https://github.com/pallets/click.git",
+      "language": "Python",
+      "issue_number": 3105,
+      "issue_url": "https://github.com/pallets/click/issues/3105",
+      "issue_title": "`FuncParamType` should use `ValueError` for `self.fail(message)`",
+      "issue_body": "FuncParamType currently just calls self.fail(value,...) if it self.func(value) raise a ValueError.  This is missing the point of the self.fail which is to give better feedback.  \nUsing typer so something like \n```python\n\n@dataclass\nclass MyClass:\n    myvalue: str\n     @staticmethod\n      def from_str(cls, input:Any) -> 'MyClass':\n              if input != 'works':\n                  raise ValueError(f'input was  {input=}, should be works')\n              return cls(input)\n@app.command('test', help='get snapshot')\nasync def test(\n    mydata: Annotated[\n        MyClass, typer.Argument(parser=MyClass.from_str)\n    ],\n) -> None:\n```\n<!--\nDescribe the expected behavior that should have happened but didn't.\n-->\nshould give str(error) not str(input)\n\n\nfix would be \n```python\nclass FuncParamType(ParamType):\n    def __init__(self, func: t.Callable[[t.Any], t.Any]) -> None:\n        self.name: str = func.__name__\n        self.func = func\n\n    def to_info_dict(self) -> dict[str, t.Any]:\n        info_dict = super().to_info_dict()\n        info_dict[\"func\"] = self.func\n        return info_dict\n\n    def convert(\n        self, value: t.Any, param: Parameter | None, ctx: Context | None\n    ) -> t.Any:\n        try:\n            return self.func(value)\n        except ValueError as e:\n            self.fail(str(e), param, ctx)\n```\nhappy to submit a PR if this makes sense.  Rather not have to create a customclass when `FuncParamType` is so close.  Not sure what else `FuncParamType` there there for, as there isn't really any documentation of why it exists, but typer uses it.",
+      "closed_at": "2026-05-08T13:47:49Z",
+      "closing_pr_number": 3211,
+      "closing_pr_url": "https://github.com/pallets/click/pull/3211",
+      "pr_base_ref": "fed9049f7a07550d560a91b30c5b0b3e17d54981",
+      "pr_head_ref": "9a067e387eee19b9c5151cd7cf095e046973e2c9",
+      "changed_files": [
+        "CHANGES.rst",
+        "src/click/types.py",
+        "tests/test_types.py"
+      ],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "pallets-click-3360",
+      "repo": "pallets/click",
+      "repo_url": "https://github.com/pallets/click.git",
+      "language": "Python",
+      "issue_number": 3360,
+      "issue_url": "https://github.com/pallets/click/issues/3360",
+      "issue_title": "Empty output from `HelpFormatter.write_usage` for a program without arguments",
+      "issue_body": "If no `args` are passed to `HelpFormatter.write_usage`, the Usage line is not printed.\n\n### Reproduction\n\n```python\nimport click\n\nf = click.HelpFormatter()\nf.write_usage(\"program\")\nprint(f.getvalue())\n```\n<!--\nDescribe how to replicate the bug.\n\nInclude a minimal reproducible example that demonstrates the bug.\nInclude the full traceback if there was an exception.\n-->\n\n### Expected output\n```\nUsage: program\n```\n\n### Actual output\n(an empty line)\n\n### Environment\n\n- Python version: 3.12.3\n- Click version: 8.3.1\n\n### Additional information\n\nWe use `click` for a CLI program with interactive mode. We are about to use `click.HelpFormatter` to print help for internal commands, some of which do not accept any arguments (`exit`, for example).",
+      "closed_at": "2026-05-16T15:53:41Z",
+      "closing_pr_number": 3434,
+      "closing_pr_url": "https://github.com/pallets/click/pull/3434",
+      "pr_base_ref": "7c99ebe23b931f27562d926814423cce85fd9766",
+      "pr_head_ref": "0551bf53588ae87f462d336f24f853a156fefe3a",
+      "changed_files": [
+        "CHANGES.rst",
+        "src/click/formatting.py",
+        "tests/test_formatting.py"
+      ],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "pallets-click-3043",
+      "repo": "pallets/click",
+      "repo_url": "https://github.com/pallets/click.git",
+      "language": "Python",
+      "issue_number": 3043,
+      "issue_url": "https://github.com/pallets/click/issues/3043",
+      "issue_title": "Multi-line help text is not handled correctly in fish",
+      "issue_body": "Multi-line help text (e.g. `help=\"\\b\\nAttachment with explicit mimetype,\\n--at image.jpg image/jpeg\"`) causes error when doing shell completion in fish.\n\n# How to replicate\n\nFrom [simonw/llm](https://github.com/simonw/llm/blob/921fae9a0ad3d664a872e35e4639b16089b61c1d/llm/cli.py#L365-L373):\n\n```py\n@click.option(\n    \"attachment_types\",\n    \"--at\",\n    \"--attachment-type\",\n    type=(str, str),\n    multiple=True,\n    callback=attachment_types_callback,\n    help=\"\\b\\nAttachment with explicit mimetype,\\n--at image.jpg image/jpeg\",\n)\n```\n\nType `llm --`, then press <kbd>Tab</kbd> to complete, observe the following error output:\n\n```shellsession\n$ llm --\nstring split: --at image.jpg image/jpeg: unknown option\n\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 1):\nstring split \",\" $completion\n^\nin command substitution\n\tcalled on line 5 of file /opt/homebrew/share/fish/vendor_completions.d/llm.fish\nin function '_llm_completion'\nin command substitution\n\n(Type 'help string' for related documentation)\ntest: Missing argument at index 3\n= dir\n      ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 7):\n        if test $metadata[1] = \"dir\";\n           ^\nin function '_llm_completion'\nin command substitution\ntest: Missing argument at index 3\n= file\n       ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 9):\n        else if test $metadata[1] = \"file\";\n                ^\nin function '_llm_completion'\nin command substitution\ntest: Missing argument at index 3\n= plain\n        ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 11):\n        else if test $metadata[1] = \"plain\";\n                ^\nin function '_llm_completion'\nin command substitution\nstring split: --at image.jpg image/jpeg: unknown option\n\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 1):\nstring split \",\" $completion\n^\nin command substitution\n\tcalled on line 5 of file /opt/homebrew/share/fish/vendor_completions.d/llm.fish\nin function '_llm_completion'\nin command substitution\n\n(Type 'help string' for related documentation)\ntest: Missing argument at index 3\n= dir\n      ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 7):\n        if test $metadata[1] = \"dir\";\n           ^\nin function '_llm_completion'\nin command substitution\ntest: Missing argument at index 3\n= file\n       ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 9):\n        else if test $metadata[1] = \"file\";\n                ^\nin function '_llm_completion'\nin command substitution\ntest: Missing argument at index 3\n= plain\n        ^\n/opt/homebrew/share/fish/vendor_completions.d/llm.fish (line 11):\n        else if test $metadata[1] = \"plain\";\n                ^\nin function '_llm_completion'\nin command substitution\n```\n\n# Analysis\n\nObtaining raw completion from click:\n\n```shellsession\n$ env _LLM_COMPLETE=fish_complete COMP_WORDS='llm --' COMP_CWORD='--' llm\nplain,--system\tSystem prompt to use\nplain,--model\tModel to use\nplain,--database\tPath to log database\nplain,--query\tUse first model matching these strings\nplain,--attachment\tAttachment path or URL or -\nplain,--at\nAttachment with explicit mimetype,\n--at image.jpg image/jpeg\nplain,--attachment-type\nAttachment with explicit mimetype,\n--at image.jpg image/jpeg\nplain,--tool\tName of a tool to make available to the model\nplain,--functions\tPython code block or file path defining functions to register as tools\nplain,--td\tShow full details of tool executions\nplain,--tools-debug\tShow full details of tool executions\nplain,--ta\tManually approve every tool execution\nplain,--tools-approve\tManually approve every tool execution\nplain,--cl\tHow many chained tool responses to allow, default 5, set 0 for unlimited\nplain,--chain-limit\tHow many chained tool responses to allow, default 5, set 0 for unlimited\nplain,--option\tkey/value options for the model\nplain,--schema\tJSON schema, filepath or ID\nplain,--schema-multi\tJSON schema to use for multiple results\nplain,--fragment\tFragment (alias, URL, hash or file path) to add to the prompt\nplain,--sf\tFragment to add to system prompt\nplain,--system-fragment\tFragment to add to system prompt\nplain,--template\tTemplate to use\nplain,--param\tParameters for template\nplain,--no-stream\tDo not stream output\nplain,--no-log\tDon't log to database\nplain,--log\tLog prompt and response to the database\nplain,--continue\tContinue the most recent conversation.\nplain,--cid\tContinue the conversation with the given ID.\nplain,--conversation\tContinue the conversation with the given ID.\nplain,--key\tAPI key to use\nplain,--save\tSave prompt with this template name\nplain,--async\tRun prompt asynchronously\nplain,--usage\tShow token usage\nplain,--extract\tExtract first fenced code block\nplain,--xl\tExtract last fenced code block\nplain,--extract-last\tExtract last fenced code block\nplain,--help\tShow this message and exit.\n```\n\nObserve that option with multi-line help text is not escaped/handled:\n\n```\nplain,--at\nAttachment with explicit mimetype,\n--at image.jpg image/jpeg\nplain,--attachment-type\nAttachment with explicit mimetype,\n--at image.jpg image/jpeg\n```\n\nWhich causes unexpected arguments passed to `string split`, causing the error:\n\nhttps://github.com/pallets/click/blob/9b13d463a4e2b455310f39122d5e6135abf3835e/src/click/shell_completion.py#L183\n\n# Environment\n\n- Python version: 3.13.7\n- Click version: 8.2.1\n- Fish version: 4.0.2",
+      "closed_at": "2026-04-29T23:37:33Z",
+      "closing_pr_number": 3126,
+      "closing_pr_url": "https://github.com/pallets/click/pull/3126",
+      "pr_base_ref": "c69643b60cf971cd5d8e5d3902632807ceab9b8f",
+      "pr_head_ref": "8e1c9170168fcdb67f867df88d16e498673e26f3",
+      "changed_files": [
+        ".gitignore",
+        "CHANGES.rst",
+        "src/click/shell_completion.py",
+        "tests/test_shell_completion.py"
+      ],
+      "expected_commands": [
+        "python -m pip install .",
+        "python -m unittest discover -s tests"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "sindresorhus-ky-581",
+      "repo": "sindresorhus/ky",
+      "repo_url": "https://github.com/sindresorhus/ky.git",
+      "language": "TypeScript",
+      "issue_number": 581,
+      "issue_url": "https://github.com/sindresorhus/ky/issues/581",
+      "issue_title": "Error: unsupported BodyInit type",
+      "issue_body": "#530 \r\n\r\n## runtime\r\nQQ\u6d4f\u89c8\u5668(ios) QQ(ios)\r\n\r\n## screenshot\r\n[test url](https://rvq9nh-5173.csb.app/)\r\n![\u5fae\u4fe1\u56fe\u7247_20240425154625](https://github.com/sindresorhus/ky/assets/14024542/2d4721bf-45cc-4c93-82bc-c24ba408a8bf)\r\n\r\n[codesandbox](https://codesandbox.io/p/github/edram/issue-ky-581/main)\r\n[repo](https://github.com/edram/issue-ky-581/blob/main/src/main.ts#L14)",
+      "closed_at": "2024-06-25T11:29:07Z",
+      "closing_pr_number": 582,
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/582",
+      "pr_base_ref": "585ebcb80545d784b31033e5a70326a0eb202468",
+      "pr_head_ref": "8e0cf213307d8ac972bc7ed51c12bf378717c6df",
+      "changed_files": [
+        "source/core/constants.ts"
+      ],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "sindresorhus-ky-622",
+      "repo": "sindresorhus/ky",
+      "repo_url": "https://github.com/sindresorhus/ky.git",
+      "language": "TypeScript",
+      "issue_number": 622,
+      "issue_url": "https://github.com/sindresorhus/ky/issues/622",
+      "issue_title": "request.d.ts compile error for browsers",
+      "issue_body": "When I try to build my project with `tsc && vite build` it fails due to the following exception:\r\n\r\n```\r\nnode_modules/ky/distribution/types/request.d.ts:2:113 - error TS2694: Namespace 'global.NodeJS' has no exported member 'ArrayBufferView'.\r\n\r\n2 type UndiciBodyInit = ArrayBuffer | AsyncIterable<Uint8Array> | Blob | FormData | Iterable<Uint8Array> | NodeJS.ArrayBufferView | URLSearchParams | null | string;\r\n                                                                                                                  ~~~~~~~~~~~~~~~\r\n\r\n\r\nFound 1 error in node_modules/ky/distribution/types/request.d.ts:2\r\n```",
+      "closed_at": "2024-08-21T14:28:07Z",
+      "closing_pr_number": 623,
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/623",
+      "pr_base_ref": "eb704826f2d1e4eb1ba193c209efa22823fd673d",
+      "pr_head_ref": "a04233c942ccd32692d89da6f31d4140fd700105",
+      "changed_files": [
+        "source/types/request.ts"
+      ],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "sindresorhus-ky-645",
+      "repo": "sindresorhus/ky",
+      "repo_url": "https://github.com/sindresorhus/ky.git",
+      "language": "TypeScript",
+      "issue_number": 645,
+      "issue_url": "https://github.com/sindresorhus/ky/issues/645",
+      "issue_title": "Modifying FormData body in beforeRequest hook does not work",
+      "issue_body": "I wanted to snake case my FormData beforeRequest. The [ky-hooks-change-case](https://github.com/alice-health/ky-hooks-change-case) library only works with non-FormData. So, I wrote my own.\r\n\r\n```ts\r\nexport const snakeCaseBody = (original) => {\r\n  if (original instanceof FormData) {\r\n    const body = new FormData();\r\n\r\n    [...original.keys()].forEach((key) => {\r\n      body.set(snakeCase(key), original.get(key)!);\r\n    });\r\n\r\n    return body;\r\n  }\r\n\r\n  return JSON.stringify(toSnakeCase(JSON.parse(original)));\r\n};\r\n\r\nexport const requestToSnakeCase = async (request, options) => {\r\n  if (options.body) {\r\n    const body = snakeCaseBody(options.body);\r\n\r\n    return new Request(request, {body});\r\n  }\r\n};\r\n```\r\nI've got a unit test that proves `snakeCaseBody` works. I also logged the Content-Type header of the request and it looks correct:\r\n```ts\r\nContent-Type multipart/form-data; boundary=----formdata-undici-066001922265\r\n```\r\nBut on the receiving end of the API, I get an error that the body cannot be parsed as FormData.\r\n\r\nIs this a limitation in ky, or am I doing something wrong?",
+      "closed_at": "2025-10-14T04:58:53Z",
+      "closing_pr_number": 764,
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/764",
+      "pr_base_ref": "ec10a6821808fb61d9aca1707b60ee5982ff09e3",
+      "pr_head_ref": "647163268a98ab40cfb6a0b6cce1d99da29b95d7",
+      "changed_files": [
+        "readme.md"
+      ],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "sindresorhus-ky-648",
+      "repo": "sindresorhus/ky",
+      "repo_url": "https://github.com/sindresorhus/ky.git",
+      "language": "TypeScript",
+      "issue_number": 648,
+      "issue_url": "https://github.com/sindresorhus/ky/issues/648",
+      "issue_title": "A ReadableStream branch was created but never consumed",
+      "issue_body": "I'm using ky in cloudflare worker with following code:\r\n\r\n```typescript\r\nimport ky from \"ky\";\r\nexport default {\r\n    async fetch (): Promise<Response> {\r\n        const result = await ky.get(\"https://www.github.com\").text();\r\n        return new Response(result);\r\n    }\r\n} satisfies ExportedHandler;\r\n```\r\n\r\nand when I turn off local mode, requests raise the following warning:\r\n```\r\nA ReadableStream branch was created but never consumed. Such branches can be created, for instance, by calling the tee() method on a ReadableStream, or by calling the clone() method on a Request or Response object. If a branch is created but never consumed, it can force the runtime to buffer the entire body of the stream in memory, which may cause the Worker to exceed its memory limit and be terminated. To avoid this, ensure that all branches created are consumed.\r\n\r\n * Unused stream created:\r\n    at result.<computed> [as text] (file:///....../node_modules/ky/source/core/Ky.ts:92:36)\r\n......\r\n```\r\n\r\nLocate the following code snippet:\r\n\r\n[source/core/Ky.ts](https://github.com/sindresorhus/ky/blob/main/source/core/Ky.ts)\r\n\r\n```typescript\r\nexport class Ky {\r\n\tstatic create(input: Input, options: Options): ResponsePromise {\r\n\t\tconst ky = new Ky(input, options);\r\n\r\n\t\tconst function_ = async (): Promise<Response> => {\r\n                         ......\r\n\t\t};\r\n\r\n\t\t......\r\n\r\n\t\tfor (const [type, mimeType] of Object.entries(responseTypes) as ObjectEntries<typeof responseTypes>) {\r\n\t\t\tresult[type] = async () => {\r\n\t\t\t\t......\r\n\t\t\t\tconst awaitedResult = await result;\r\n\t\t\t\tconst response = awaitedResult.clone();\r\n\r\n\t\t\t\tif (type === 'json') {\r\n\t\t\t\t\tif (response.status === 204) {\r\n\t\t\t\t\t\treturn '';\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\tconst arrayBuffer = await response.clone().arrayBuffer();\r\n\t\t\t\t\tconst responseSize = arrayBuffer.byteLength;\r\n\t\t\t\t\tif (responseSize === 0) {\r\n\t\t\t\t\t\treturn '';\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\tif (options.parseJson) {\r\n\t\t\t\t\t\treturn options.parseJson(await response.text());\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\r\n\t\t\t\treturn response[type]();\r\n\t\t\t};\r\n\t\t}\r\n\r\n\t\treturn result;\r\n\t}\r\n```\r\n\r\nThe `awaitedResult` is a variable of type Response. Since it is declared, it has been cloned only once, and its ReadableStream has never been consumed.\r\nAfter `awaitedResult` has finished cloning, its ReadableStream should be closed to ensure memory safety.\r\nSeems like:\r\n\r\n```typescript\r\nconst awaitedResult = await result;\r\nconst response = awaitedResult.clone();\r\nawait awaitedResult.body.cancel();\r\n```\r\n",
+      "closed_at": "2024-12-09T23:52:05Z",
+      "closing_pr_number": 661,
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/661",
+      "pr_base_ref": "3ba40cc6333cf1847c02c51744e22ab7c04407f5",
+      "pr_head_ref": "ee2fb19fba6e124c05cf98b28d826806610f445f",
+      "changed_files": [
+        "source/core/Ky.ts"
+      ],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "sindresorhus-ky-682",
+      "repo": "sindresorhus/ky",
+      "repo_url": "https://github.com/sindresorhus/ky.git",
+      "language": "TypeScript",
+      "issue_number": 682,
+      "issue_url": "https://github.com/sindresorhus/ky/issues/682",
+      "issue_title": "Document `ProxyAgent` and HTTP/2 support",
+      "issue_body": "Node.js is set to embed Undici ([see proposal](https://github.com/openjs-foundation/summit/issues/443)), allowing the use of the [proxy agent](https://github.com/nodejs/undici/blob/main/docs/docs/api/EnvHttpProxyAgent.md#example---basic-proxy-fetch-with-global-agent-dispatcher) and HTTP/2 features without importing external dependencies. It would be great if Ky could support these new `fetch()` capabilities once they are integrated.\n",
+      "closed_at": "2025-10-15T11:09:56Z",
+      "closing_pr_number": 761,
+      "closing_pr_url": "https://github.com/sindresorhus/ky/pull/761",
+      "pr_base_ref": "5a3fc90ccba78d10809e48fa89cef722543c9597",
+      "pr_head_ref": "51482280c1e028d9a0cbe6d43681f9e8d79681c8",
+      "changed_files": [
+        "readme.md"
+      ],
+      "expected_commands": [
+        "npm install"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "BurntSushi-ripgrep-1875",
+      "repo": "BurntSushi/ripgrep",
+      "repo_url": "https://github.com/BurntSushi/ripgrep.git",
+      "language": "Rust",
+      "issue_number": 1875,
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1875",
+      "issue_title": "Add support for pofile (.po)?",
+      "issue_body": "#### Describe your feature request\r\n\r\nI want to exclude files matching `*.po` which is a Gettext PO file type.\r\nI would assume that `po` should be a name for it, possibly with a `pofile` alias.",
+      "closed_at": "2021-05-28T16:06:11Z",
+      "closing_pr_number": 1876,
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/1876",
+      "pr_base_ref": "94e4b8e301302097dad48b292560ce135c4d4926",
+      "pr_head_ref": "cebced7ba371c52f81c161d939edf419786147cf",
+      "changed_files": [
+        "crates/ignore/src/default_types.rs"
+      ],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "BurntSushi-ripgrep-1918",
+      "repo": "BurntSushi/ripgrep",
+      "repo_url": "https://github.com/BurntSushi/ripgrep.git",
+      "language": "Rust",
+      "issue_number": 1918,
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1918",
+      "issue_title": "Add support for cuda files",
+      "issue_body": "CUDA programming is usually done within .cu and .cuh files, though it can also include the usual c/c++ file extensions.  Please add \"cuda\" as another one of the ripgrep types.",
+      "closed_at": "2021-06-30T13:50:54Z",
+      "closing_pr_number": 1919,
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/1919",
+      "pr_base_ref": "abf115228e886494e6198a64c519db7285ff29af",
+      "pr_head_ref": "623a0feb1ae666fd6b0d026934f6eefa5e50179b",
+      "changed_files": [
+        "crates/ignore/src/default_types.rs"
+      ],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "BurntSushi-ripgrep-1962",
+      "repo": "BurntSushi/ripgrep",
+      "repo_url": "https://github.com/BurntSushi/ripgrep.git",
+      "language": "Rust",
+      "issue_number": 1962,
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1962",
+      "issue_title": "Documentation for '--quiet' is misleading",
+      "issue_body": "The documentation for the `--quiet` flag is misleading with the `--files` flag.\r\n\r\nThe current documentation states:\r\n\r\n```\r\n       -q, --quiet\r\n           Do not print anything to stdout. If a match is found in a file,\r\n           then ripgrep will stop searching. This is useful when ripgrep is\r\n           used only for its exit code (which will be an error if no matches\r\n           are found).\r\n\r\n           When --files is used, then ripgrep will stop finding files after\r\n           finding the first file that matches all ignore rules.\r\n```\r\n\r\nThe very last part, \"the first file that matches all ignore rules\" seems like it's worded backwards.  I get what it means, it's just oddly worded.  It might be better to state instead \"the first file that does not match any ignore rules\".\r\n\r\nJust an opinion, feel free to close if you disagree.\r\n\r\n#### What version of ripgrep are you using?\r\n\r\n```\r\nrg --version\r\nripgrep 13.0.0\r\n-SIMD -AVX (compiled)\r\n+SIMD +AVX (runtime)\r\n```",
+      "closed_at": "2023-03-28T11:23:01Z",
+      "closing_pr_number": 2462,
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/2462",
+      "pr_base_ref": "595e7845b87c1b9e6cfd4f1c23b3910dca3e15f0",
+      "pr_head_ref": "e87b3ec6536ef8058a703c06782d3e82acbd4179",
+      "changed_files": [
+        "crates/core/app.rs"
+      ],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "BurntSushi-ripgrep-1990",
+      "repo": "BurntSushi/ripgrep",
+      "repo_url": "https://github.com/BurntSushi/ripgrep.git",
+      "language": "Rust",
+      "issue_number": 1990,
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/1990",
+      "issue_title": "Improve error message when RIPGREP_CONFIG_PATH refers to a nonexistent file",
+      "issue_body": "## Current behavior\r\n\r\nWhen `RIPGREP_CONFIG_PATH` refers to a nonexistent file, this is the warning that is currently printed:\r\n\r\n```console\r\n$ RIPGREP_CONFIG_PATH=~/.config/ripgreprc rg 'search regex'\r\n/Users/roryokane/.config/ripgreprc: No such file or directory (os error 2)\r\n```\r\n\r\n## Proposed improvement\r\n\r\nThe error message I\u2019d prefer:\r\n\r\n```console\r\n$ RIPGREP_CONFIG_PATH=~/.config/ripgreprc rg 'search regex'\r\nProblem reading the config file specified in RIPGREP_CONFIG_PATH:\r\n/Users/roryokane/.config/ripgreprc: No such file or directory (os error 2)\r\n```\r\n\r\nI wish I could fit the phrase \u201cthe RIPGREP_CONFIG_PATH environment variable\u201d in that first line, but I couldn\u2019t think of a wording that wouldn\u2019t make the error distractingly long when the user doesn\u2019t want to fix that warning soon, which might happen occasionally.\r\n\r\n## Rationale\r\n\r\nThis would be especially useful for those who have set `RIPGREP_CONFIG_PATH` in their shell\u2019s config, and have recently copied their shell config to a new computer. They may not remember that `RIPGREP_CONFIG_PATH` is set.\r\n\r\nTo illustrate, here\u2019s how the current error message looks in that case:\r\n\r\n```shell\r\n# somewhere in my shell config\r\nexport RIPGREP_CONFIG_PATH=~/.config/ripgreprc\r\n```\r\n\r\n```console\r\n$ rg 'search regex'\r\n/Users/roryokane/.config/ripgreprc: No such file or directory (os error 2)\r\n```\r\n\r\nWhen I first saw that error, I assumed that ripgrep looked for that file by default, and I was surprised that it was so verbose about a config file not existing. It took me some searching to realize that `RIPGREP_CONFIG_PATH` was involved. After that, I solved the problem by copying my config file to the new computer.",
+      "closed_at": "2021-11-15T15:29:34Z",
+      "closing_pr_number": 2070,
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/2070",
+      "pr_base_ref": "009dda1488ac6a01725b3e49ec9b81a1edf8036d",
+      "pr_head_ref": "de2de563bdb4ea437075bbfd7211260f6fd28ea0",
+      "changed_files": [
+        "crates/core/config.rs"
+      ],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": []
+    },
+    {
+      "id": "BurntSushi-ripgrep-2111",
+      "repo": "BurntSushi/ripgrep",
+      "repo_url": "https://github.com/BurntSushi/ripgrep.git",
+      "language": "Rust",
+      "issue_number": 2111,
+      "issue_url": "https://github.com/BurntSushi/ripgrep/issues/2111",
+      "issue_title": "decompression binaries are searched for even when they will never be used",
+      "issue_body": "####  Feature request\r\n\r\nSwitch for turn off tools check\r\n\r\nFor example, lets say I want to do multiple replacements like so:\r\n\r\n```\r\nrg --passthru \"!RE1!\" \"!file!\" -or \"!RP1!\" |^\r\nrg  --passthru \"!RE2!\" -or \"!RP2!\"  |^\r\n...\r\nrg  --passthru \"!RE6!\" -or \"!RP6!\"  |^\r\nrg  --passthru \"!RE7!\" -or \"!RP7!\"\r\n```\r\nand every new instance of rg wiil do:\r\n```\r\ndecompress.rs:482: gzip: could not find executable in PATH\r\ndecompress.rs:482: gzip: could not find executable in PATH\r\ndecompress.rs:482: bzip2: could not find executable in PATH\r\ndecompress.rs:482: bzip2: could not find executable in PATH\r\ndecompress.rs:482: xz: could not find executable in PATH\r\ndecompress.rs:482: xz: could not find executable in PATH\r\ndecompress.rs:482: lz4: could not find executable in PATH\r\ndecompress.rs:482: xz: could not find executable in PATH\r\ndecompress.rs:482: brotli: could not find executable in PATH\r\ndecompress.rs:482: zstd: could not find executable in PATH\r\ndecompress.rs:482: zstd: could not find executable in PATH\r\ndecompress.rs:482: uncompress: could not find executable in PATH\r\n```\r\nSo this kind of switch can speed up things a little bit\r\n\r\n\r\n",
+      "closed_at": "2025-10-12T20:31:21Z",
+      "closing_pr_number": 3181,
+      "closing_pr_url": "https://github.com/BurntSushi/ripgrep/pull/3181",
+      "pr_base_ref": "5c42c8c48f4163ba7c0662cb70dbf61f9d670d9a",
+      "pr_head_ref": "e4f0d40056b7438f00cc6dc3a092cf775e5801b2",
+      "changed_files": [
+        "crates/core/search.rs"
+      ],
+      "expected_commands": [
+        "cargo test",
+        "cargo build"
+      ],
+      "expected_instruction_files": []
+    }
+  ]
+}

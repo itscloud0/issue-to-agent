@@ -14,3 +14,4 @@ node_modules/
 .DS_Store
 ISSUE_AGENT_PACK.md
 issue-agent-pack.html
+benchmark/.cache/

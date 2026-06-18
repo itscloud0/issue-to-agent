@@ -87,6 +87,97 @@ class IssueToAgentTests(unittest.TestCase):
             self.assertIn("npm run test", pack.repository.commands)
             self.assertIn("npm run build", pack.repository.commands)
 
+    def test_ranks_file_type_registry_for_short_extension_request(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / ".github" / "ISSUE_TEMPLATE").mkdir(parents=True)
+            (repo / "crates" / "core").mkdir(parents=True)
+            (repo / "crates" / "ignore" / "src").mkdir(parents=True)
+            (repo / "Cargo.toml").write_text(
+                "[package]\nname = \"rgdemo\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+                encoding="utf-8",
+            )
+            (repo / ".github" / "ISSUE_TEMPLATE" / "feature_request.md").write_text(
+                "describe feature request support want your issue\n" * 8,
+                encoding="utf-8",
+            )
+            (repo / "crates" / "core" / "app.rs").write_text(
+                "support exclude feature request alias want possibly\n" * 8,
+                encoding="utf-8",
+            )
+            (repo / "crates" / "ignore" / "src" / "default_types.rs").write_text(
+                "pub const DEFAULT_TYPES: &[(&[&str], &[&str])] = &[];\n"
+                "// default file types shipped with ripgrep\n",
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# Add support for pofile (.po)?\n\n"
+                "I want to exclude files matching `*.po`, which is a Gettext PO file type.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=5)
+
+            paths = [hit.path for hit in pack.relevant_files]
+            self.assertLess(
+                paths.index("crates/ignore/src/default_types.rs"),
+                paths.index("crates/core/app.rs"),
+            )
+
+    def test_preserves_identifier_terms_for_config_path_ranking(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "crates" / "core").mkdir(parents=True)
+            (repo / "Cargo.toml").write_text(
+                "[package]\nname = \"rgdemo\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+                encoding="utf-8",
+            )
+            (repo / "GUIDE.md").write_text(
+                "warning message user shell config file problem path\n" * 12,
+                encoding="utf-8",
+            )
+            (repo / "crates" / "core" / "config.rs").write_text(
+                "fn config_path() { let _ = \"RIPGREP_CONFIG_PATH\"; }\n",
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# Improve error message when RIPGREP_CONFIG_PATH refers to a nonexistent file\n\n"
+                "When `RIPGREP_CONFIG_PATH` points at a missing ripgreprc, explain that the config path is from the environment variable.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=3)
+
+            self.assertEqual(pack.relevant_files[0].path, "crates/core/config.rs")
+
+    def test_ranks_core_search_for_searched_decompression_issue(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "crates" / "cli" / "src").mkdir(parents=True)
+            (repo / "crates" / "core").mkdir(parents=True)
+            (repo / "Cargo.toml").write_text(
+                "[package]\nname = \"rgdemo\"\nversion = \"0.1.0\"\nedition = \"2021\"\n",
+                encoding="utf-8",
+            )
+            (repo / "crates" / "cli" / "src" / "decompress.rs").write_text(
+                "gzip bzip2 xz lz4 brotli zstd executable decompress decompression\n" * 5,
+                encoding="utf-8",
+            )
+            (repo / "crates" / "core" / "search.rs").write_text(
+                "search worker controls when decompression preprocessors are used\n",
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# decompression binaries are searched for even when they will never be used\n\n"
+                "Repeated `rg --passthru` runs check gzip and bzip2 executables before the search needs decompression.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=5)
+
+            paths = [hit.path for hit in pack.relevant_files]
+            self.assertIn("crates/core/search.rs", paths)
+
     def test_detects_go_and_rust_verification_commands(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = Path(tmpdir)
@@ -240,6 +331,24 @@ class IssueToAgentTests(unittest.TestCase):
         self.assertIn("demo/issue-checkout-timeout.html", readme)
         self.assertIn("demo/real-ky-863.html", readme)
         self.assertIn("agent-ready", readme)
+
+    def test_benchmark_fixtures_cover_migration_scope(self):
+        payload = json.loads(
+            (ROOT / "benchmark" / "fixtures" / "issues.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        fixtures = payload["fixtures"]
+
+        self.assertGreaterEqual(len(fixtures), 15)
+        self.assertGreaterEqual(len({fixture["repo"] for fixture in fixtures}), 3)
+        self.assertGreaterEqual(len({fixture["language"] for fixture in fixtures}), 2)
+
+        for fixture in fixtures:
+            self.assertIn("github.com", fixture["issue_url"])
+            self.assertIn("github.com", fixture["closing_pr_url"])
+            self.assertTrue(fixture["pr_base_ref"])
+            self.assertTrue(fixture["changed_files"])
 
 
 if __name__ == "__main__":

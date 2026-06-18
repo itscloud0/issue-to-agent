@@ -3,6 +3,8 @@
 ## Unreleased
 
 - Add `--format prompt` for writing only the ready-to-paste agent prompt.
+- Improve Rust/source-path ranking using identifier, extension, and title-term signals.
+- Add a reproducible benchmark over 15 closed issues from Click, ky, and ripgrep.
 
 ## v0.1.0 - 2026-06-17
 
