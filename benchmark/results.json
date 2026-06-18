@@ -49,16 +49,16 @@
       "tool_top10_recall": 0.5,
       "tool_top5_recall": 0.5,
       "tool_top_files": [
-        "src/click/_termui_impl.py",
         "src/click/termui.py",
+        "src/click/_termui_impl.py",
         "tests/test_termui.py",
         "src/click/shell_completion.py",
         "src/click/types.py",
         "tests/test_utils.py",
         "src/click/utils.py",
-        "src/click/_compat.py",
         "src/click/testing.py",
-        "src/click/_winconsole.py"
+        "examples/termui/termui.py",
+        "src/click/parser.py"
       ]
     },
     {
@@ -106,14 +106,14 @@
       "tool_top5_recall": 1.0,
       "tool_top_files": [
         "src/click/shell_completion.py",
-        "tests/test_termui.py",
         "tests/test_shell_completion.py",
-        "tests/test_options.py",
-        "src/click/termui.py",
+        "tests/test_termui.py",
         "src/click/testing.py",
-        "src/click/_termui_impl.py",
+        "src/click/termui.py",
         "src/click/types.py",
+        "tests/test_options.py",
         "src/click/utils.py",
+        "tests/test_testing.py",
         "tests/test_formatting.py"
       ]
     },
@@ -158,20 +158,20 @@
       "language": "Python",
       "output_complete": true,
       "repo": "pallets/click",
-      "tool_irrelevant_file_rate": 0.9,
-      "tool_top10_recall": 0.3333,
+      "tool_irrelevant_file_rate": 0.8,
+      "tool_top10_recall": 0.6667,
       "tool_top5_recall": 0.3333,
       "tool_top_files": [
         "src/click/types.py",
-        "tests/test_options.py",
         "src/click/utils.py",
-        "tests/test_arguments.py",
-        "tests/test_info_dict.py",
+        "tests/test_options.py",
         "src/click/termui.py",
-        "src/click/_termui_impl.py",
         "src/click/parser.py",
         "tests/test_termui.py",
-        "src/click/testing.py"
+        "src/click/testing.py",
+        "src/click/shell_completion.py",
+        "tests/test_types.py",
+        "tests/test_utils.py"
       ]
     },
     {
@@ -215,20 +215,20 @@
       "language": "Python",
       "output_complete": true,
       "repo": "pallets/click",
-      "tool_irrelevant_file_rate": 0.9,
-      "tool_top10_recall": 0.3333,
+      "tool_irrelevant_file_rate": 0.8,
+      "tool_top10_recall": 0.6667,
       "tool_top5_recall": 0.3333,
       "tool_top_files": [
-        "tests/test_options.py",
-        "tests/test_termui.py",
         "tests/test_formatting.py",
-        "src/click/testing.py",
-        "tests/test_arguments.py",
-        "src/click/termui.py",
-        "tests/test_commands.py",
         "tests/test_utils.py",
+        "tests/test_termui.py",
+        "src/click/testing.py",
+        "tests/test_testing.py",
+        "src/click/formatting.py",
+        "src/click/termui.py",
         "src/click/types.py",
-        "tests/test_context.py"
+        "tests/test_options.py",
+        "tests/test_stream_lifecycle.py"
       ]
     },
     {
@@ -278,15 +278,15 @@
       "tool_top5_recall": 0.5,
       "tool_top_files": [
         "src/click/shell_completion.py",
-        "tests/test_options.py",
         "tests/test_shell_completion.py",
+        "tests/test_options.py",
         "src/click/types.py",
         "src/click/termui.py",
-        "docs/shell-completion.md",
         "tests/test_termui.py",
-        "src/click/_termui_impl.py",
-        "docs/advanced.md",
-        "tests/test_commands.py"
+        "docs/shell-completion.md",
+        "src/click/utils.py",
+        "tests/test_utils.py",
+        "src/click/parser.py"
       ]
     },
     {
@@ -332,13 +332,13 @@
       "tool_top5_recall": 0.0,
       "tool_top_files": [
         "test/main.ts",
+        "source/types/request.ts",
         ".github/workflows/main.yml",
         "source/types/ResponsePromise.ts",
         "test/browser.ts",
         "test/headers.ts",
         "source/core/constants.ts",
         "source/types/options.ts",
-        "source/types/request.ts",
         "source/utils/delay.ts",
         "package.json"
       ]
@@ -388,12 +388,12 @@
         "source/types/request.ts",
         "source/types/options.ts",
         "test/headers.ts",
-        "package.json",
         "source/core/Ky.ts",
-        "test/helpers/with-page.ts",
-        "source/types/ResponsePromise.ts",
         "source/core/constants.ts",
-        "test/main.ts"
+        "source/types/ResponsePromise.ts",
+        "test/main.ts",
+        "test/hooks.ts",
+        "readme.md"
       ]
     },
     {
@@ -438,6 +438,8 @@
       "tool_top10_recall": 1.0,
       "tool_top5_recall": 1.0,
       "tool_top_files": [
+        "test/hooks.ts",
+        "source/types/hooks.ts",
         "test/headers.ts",
         "readme.md",
         "test/formdata-searchparams.ts",
@@ -445,8 +447,6 @@
         "source/core/Ky.ts",
         "test/browser.ts",
         "test/main.ts",
-        "test/hooks.ts",
-        "source/types/hooks.ts",
         "test/helpers/parse-body.ts"
       ]
     },
@@ -493,15 +493,15 @@
       "tool_top5_recall": 1.0,
       "tool_top_files": [
         "source/core/Ky.ts",
-        "readme.md",
-        "source/types/options.ts",
-        "test/main.ts",
-        "source/core/constants.ts",
-        "source/types/ResponsePromise.ts",
-        "source/types/ky.ts",
-        "test/browser.ts",
         "source/types/hooks.ts",
-        "test/headers.ts"
+        "readme.md",
+        "test/hooks.ts",
+        "source/types/options.ts",
+        "test/retry.ts",
+        "test/main.ts",
+        "source/types/retry.ts",
+        "source/core/constants.ts",
+        "source/types/ResponsePromise.ts"
       ]
     },
     {
@@ -545,14 +545,14 @@
       "tool_top_files": [
         "readme.md",
         ".github/workflows/main.yml",
+        "source/core/constants.ts",
         "source/types/options.ts",
         "test/headers.ts",
-        "test/fetch.ts",
-        "source/core/constants.ts",
         "test/helpers/create-http-test-server.ts",
-        "source/types/ResponsePromise.ts",
-        "source/types/ky.ts",
-        "test/main.ts"
+        "test/main.ts",
+        "test/fetch.ts",
+        "package.json",
+        "source/types/ResponsePromise.ts"
       ]
     },
     {
@@ -693,14 +693,14 @@
       "tool_top_files": [
         "crates/core/app.rs",
         "CHANGELOG.md",
-        "GUIDE.md",
         "FAQ.md",
+        "GUIDE.md",
         "crates/core/args.rs",
         "crates/ignore/src/walk.rs",
+        "README.md",
         "crates/core/main.rs",
         "tests/data/sherlock-nul.txt",
-        "tests/regression.rs",
-        "crates/cli/src/decompress.rs"
+        "tests/regression.rs"
       ]
     },
     {
@@ -746,15 +746,15 @@
       "tool_top5_recall": 0.0,
       "tool_top_files": [
         "crates/core/app.rs",
+        "GUIDE.md",
         "crates/core/args.rs",
         "crates/ignore/src/walk.rs",
         "tests/data/sherlock-nul.txt",
-        "GUIDE.md",
         "FAQ.md",
-        "crates/searcher/src/searcher/mod.rs",
-        "crates/cli/src/lib.rs",
+        "crates/printer/src/json.rs",
         "crates/core/config.rs",
-        "crates/cli/src/decompress.rs"
+        "tests/util.rs",
+        "crates/searcher/src/searcher/mod.rs"
       ]
     },
     {
@@ -796,14 +796,14 @@
       "tool_top_files": [
         "crates/cli/src/decompress.rs",
         "crates/core/search.rs",
+        "crates/printer/src/json.rs",
+        "crates/printer/src/util.rs",
         "crates/core/flags/hiargs.rs",
         "crates/searcher/src/searcher/mod.rs",
+        "tests/misc.rs",
         "crates/ignore/src/walk.rs",
-        "crates/printer/src/json.rs",
-        "tests/binary.rs",
-        "crates/core/flags/lowargs.rs",
-        "crates/searcher/src/testutil.rs",
-        "tests/misc.rs"
+        "crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs",
+        "tests/json.rs"
       ]
     }
   ],
@@ -814,7 +814,7 @@
     "top10_cases_tool_beats_baseline": 9,
     "top5_cases_tool_beats_baseline": 7
   },
-  "duration_seconds": 1.234,
+  "duration_seconds": 1.25,
   "fixture_count": 15,
   "languages": [
     "Python",
@@ -824,8 +824,8 @@
   "repository_count": 3,
   "schema_version": 1,
   "tool": {
-    "mean_irrelevant_file_rate": 0.8867,
-    "mean_top10_recall": 0.8444,
+    "mean_irrelevant_file_rate": 0.8733,
+    "mean_top10_recall": 0.8889,
     "mean_top5_recall": 0.6444
   }
 }

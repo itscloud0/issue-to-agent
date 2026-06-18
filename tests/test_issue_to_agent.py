@@ -178,6 +178,75 @@ class IssueToAgentTests(unittest.TestCase):
             paths = [hit.path for hit in pack.relevant_files]
             self.assertIn("crates/core/search.rs", paths)
 
+    def test_ranks_source_file_for_exact_code_reference(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "src" / "click").mkdir(parents=True)
+            (repo / "tests").mkdir()
+            (repo / "pyproject.toml").write_text("[project]\nname = \"clickdemo\"\n", encoding="utf-8")
+            (repo / "src" / "click" / "formatting.py").write_text(
+                "class HelpFormatter:\n"
+                "    def write_usage(self, prog, args='', prefix='Usage: '):\n"
+                "        return f'{prefix}{prog} {args}'\n",
+                encoding="utf-8",
+            )
+            (repo / "tests" / "test_formatting.py").write_text(
+                "def test_usage_line_for_empty_args():\n"
+                "    assert 'Usage:'\n",
+                encoding="utf-8",
+            )
+            (repo / "tests" / "test_options.py").write_text(
+                "actual argument cli empty exception exit internal passed\n" * 5,
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# Empty output from `HelpFormatter.write_usage` for a program without arguments\n\n"
+                "If no args are passed to HelpFormatter.write_usage, the Usage line is not printed.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=3)
+
+            paths = [hit.path for hit in pack.relevant_files]
+            self.assertIn("src/click/formatting.py", paths)
+            self.assertIn("tests/test_formatting.py", paths)
+
+    def test_ranks_test_companion_for_matched_source_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "src" / "click").mkdir(parents=True)
+            (repo / "tests").mkdir()
+            (repo / "pyproject.toml").write_text("[project]\nname = \"clickdemo\"\n", encoding="utf-8")
+            (repo / "src" / "click" / "types.py").write_text(
+                "class FuncParamType:\n"
+                "    def convert(self, value, param, ctx):\n"
+                "        try:\n"
+                "            return self.func(value)\n"
+                "        except ValueError as e:\n"
+                "            self.fail(str(e), param, ctx)\n",
+                encoding="utf-8",
+            )
+            (repo / "tests" / "test_types.py").write_text(
+                "def test_type_conversion_error_message():\n"
+                "    assert 'message'\n",
+                encoding="utf-8",
+            )
+            (repo / "tests" / "test_options.py").write_text(
+                "callable cls convert dict fix give info input message test\n" * 5,
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# `FuncParamType` should use `ValueError` for `self.fail(message)`\n\n"
+                "FuncParamType should pass str(error) instead of the input value.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=3)
+
+            paths = [hit.path for hit in pack.relevant_files]
+            self.assertIn("src/click/types.py", paths)
+            self.assertIn("tests/test_types.py", paths)
+
     def test_detects_go_and_rust_verification_commands(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = Path(tmpdir)

@@ -44,8 +44,8 @@ Generated on 2026-06-18.
 | Metric | issue-to-agent | filename baseline |
 | --- | ---: | ---: |
 | Mean Top-5 file recall | 0.6444 | 0.3333 |
-| Mean Top-10 file recall | 0.8444 | 0.3667 |
-| Mean irrelevant-file rate | 0.8867 | 0.9304 |
+| Mean Top-10 file recall | 0.8889 | 0.3667 |
+| Mean irrelevant-file rate | 0.8733 | 0.9304 |
 
 Other checks:
 
