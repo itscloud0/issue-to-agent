@@ -317,6 +317,8 @@ def render_html(pack: TaskPack) -> str:
 """
     return clean_trailing_spaces(document)
 
+def render_prompt(pack: TaskPack) -> str:
+    return pack.prompt
 
 def render_file_card(hit: object) -> str:
     reasons = "".join(f"<li>{html.escape(reason)}</li>" for reason in hit.reasons)

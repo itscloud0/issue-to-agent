@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `--format prompt` for writing only the ready-to-paste agent prompt.
+
 ## v0.1.0 - 2026-06-17
 
 - Initial local CLI.
