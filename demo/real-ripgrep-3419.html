@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue Agent Pack - Nondeterminism in ignore::WalkBuilder parallel multi-root walk</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #596575;
+      --border: #d9e0ea;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --ink: #111827;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    header {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      padding: 24px;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin: 0 0 12px;
+    }
+    h1 {
+      font-size: 38px;
+      letter-spacing: 0;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+    h3 {
+      font-size: 16px;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      max-width: 820px;
+    }
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin: 10px 6px 0 0;
+      color: var(--accent);
+      background: #eefaf8;
+      font-size: 13px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+    .metric strong {
+      display: block;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    section, article {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .full {
+      grid-column: 1 / -1;
+    }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #f2f4f1;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    .score {
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    .body-excerpt {
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+    a {
+      color: var(--accent);
+    }
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Issue Agent Pack</h1>
+      <p class="subtitle">Nondeterminism in ignore::WalkBuilder parallel multi-root walk</p>
+      <span class="pill">bug</span>
+      <div class="metrics">
+        <div class="metric"><strong>8</strong><span>likely files</span></div>
+        <div class="metric"><strong>2</strong><span>commands</span></div>
+        <div class="metric"><strong>0</strong><span>instruction files</span></div>
+      </div>
+    </header>
+    <div class="grid">
+      <div>
+        <section>
+          <h2>Issue summary</h2>
+          <p><a href="https://github.com/BurntSushi/ripgrep/issues/3419">https://github.com/BurntSushi/ripgrep/issues/3419</a></p>
+          <p class="body-excerpt">### Please tick this box to confirm you have reviewed the above.
+
+- [x] I have a different issue.
+
+### What version of ripgrep are you using?
+
+14.1.1
+
+### How did you install ripgrep?
+
+Cargo
+
+### What operating system are you using ripgrep on?
+
+macOS 26.5
+
+### Describe your bug.
+
+`ignore::WalkBuilder` appears to produce nondeterministic results for a parallel multi-root walk when one root has a scoped ignore rule that should not apply to another root.
+
+
+
+### What are the steps to reproduce the behavior?
+
+Minimal layout:
+
+```text
+.git/
+.gitignore
+noxfile.py
+src/scikit_build_core/build/metadata.py
+tests/test_metadata.py
+```
+
+`.gitignore`:
+
+```gitignore
+tests/**/build/
+```
+
+The source build file should always be included: the ignore rule only matches `build/` directories below `tests/`.
+
+Minimal Rust repro with `ignore = &quot;0.4.25&quot;`:
+
+```rust
+use std::path::Path;
+use std::sync::atomic::{At...</p>
+        </section>
+        <section>
+          <h2>Likely files</h2>
+
+    <article>
+      <h3><code>crates/ignore/src/walk.rs</code></h3>
+      <p class="score">Score 251</p>
+      <ul><li>path matches: ignore, walk</li><li>code references: atomicbool, build_parallel, builder, builder.add, builder.build_parallel, builder.current_dir</li><li>content mentions: above, across, actual, another, applied, apply, atomic, atomicbool</li></ul>
+      <pre>L2: cmp::Ordering,
+L4: fs::{self, FileType, Metadata},
+L7: sync::atomic::{AtomicBool, AtomicUsize, Ordering as AtomicOrdering},</pre>
+    </article>
+
+
+    <article>
+      <h3><code>CHANGELOG.md</code></h3>
+      <p class="score">Score 177</p>
+      <ul><li>code references: path, root, threads</li><li>content mentions: another, appears, applied, behavior, bug, cargo, cases, causing</li></ul>
+      <pre>L5: Bug fixes:
+L7: * [BUG #3212](https://github.com/BurntSushi/ripgrep/pull/3212):
+L8: Don&#x27;t check for the existence of `.jj` when `--no-ignore` is used.</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/core/flags/hiargs.rs</code></h3>
+      <p class="score">Score 163</p>
+      <ul><li>path matches: core</li><li>code references: builder, builder.add, current_dir, entry, path, seen</li><li>content mentions: across, actual, another, behavior, box, builder, did, different</li></ul>
+      <pre>L29: /// and wishy washy. The main idea here is that high level arguments generally
+L57: globs: ignore::overrides::Override,
+L61: ignore_file_case_insensitive: bool,</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/core/main.rs</code></h3>
+      <p class="score">Score 158</p>
+      <ul><li>path matches: core, main</li><li>code references: atomicbool, build_parallel, builder, entry, join, load</li><li>content mentions: appears, applied, atomic, atomicbool, behavior, below, box, builder</li></ul>
+      <pre>L2: The main entry point into ripgrep.
+L7: use ignore::WalkState;
+L20: // use the system allocator. On Linux, this would normally be glibc&#x27;s</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/ignore/src/gitignore.rs</code></h3>
+      <p class="score">Score 150</p>
+      <ul><li>path matches: gitignore, ignore</li><li>code references: builder, builder.add, current_dir, join, path, root</li><li>content mentions: actual, builder, cargo, cases, control, core, different, dir</li></ul>
+      <pre>L2: The gitignore module provides a way to match globs from a gitignore file
+L6: `gitignore` man page from scratch. That is, this module does *not* shell out to
+L7: the `git` command line tool.</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/ignore/src/dir.rs</code></h3>
+      <p class="score">Score 147</p>
+      <ul><li>path matches: dir, ignore</li><li>code references: builder, builder.add, current_dir, entry, join, path</li><li>content mentions: across, applied, apply, below, bug, builder, cases, continue</li></ul>
+      <pre>L1: // This module provides a data structure, `Ignore`, that connects &quot;directory
+L2: // traversal&quot; with &quot;ignore matchers.&quot; Specifically, it knows about gitignore
+L4: // Namely, every matcher logically corresponds to ignore rules from a single</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/ignore/src/lib.rs</code></h3>
+      <p class="score">Score 128</p>
+      <ul><li>path matches: ignore</li><li>code references: builder, entry, entry.path, join, path, walkbuilder</li><li>content mentions: apply, atomic, box, cases, continue, control, dir, directories</li></ul>
+      <pre>L2: The ignore crate provides a fast recursive directory iterator that respects
+L3: various filters such as globs, file types and `.gitignore` files. The precise
+L4: matching rules and precedence is explained in the documentation for</pre>
+    </article>
+
+
+    <article>
+      <h3><code>crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs</code></h3>
+      <p class="score">Score 117</p>
+      <ul><li>path matches: gitignore, ignore</li><li>code references: builder, builder.add, path, root</li><li>content mentions: builder, dir, files, gitignore, ignore, root</li><li>test file may need a regression case</li><li>paired source/test file</li></ul>
+      <pre>L3: use ignore::gitignore::{Gitignore, GitignoreBuilder};
+L5: const IGNORE_FILE: &amp;&#x27;static str =
+L6: &quot;tests/gitignore_matched_path_or_any_parents_tests.gitignore&quot;;</pre>
+    </article>
+
+        </section>
+      </div>
+      <aside>
+        <section>
+          <h2>Commands</h2>
+          <ul><li><code>cargo test</code></li><li><code>cargo build</code></li></ul>
+        </section>
+        <section>
+          <h2>Acceptance criteria</h2>
+          <ul><li>Resolve the behavior described by: Nondeterminism in ignore::WalkBuilder parallel multi-root walk.</li><li>Add or update the smallest relevant tests for the changed behavior.</li><li>Run the suggested verification commands and report any command that cannot run.</li></ul>
+        </section>
+        <section>
+          <h2>Risk areas</h2>
+          <ul><li>No AGENTS.md or common agent instruction file was detected.</li></ul>
+        </section>
+        <section>
+          <h2>Repo Instructions</h2>
+          <p>No agent instruction file detected.</p>
+        </section>
+      </aside>
+      <section class="full">
+        <h2>Agent-ready prompt</h2>
+        <pre>Work as a pragmatic senior engineer in this repo.
+
+Issue: Nondeterminism in ignore::WalkBuilder parallel multi-root walk
+URL: https://github.com/BurntSushi/ripgrep/issues/3419
+Labels: bug
+
+Likely relevant files:
+- crates/ignore/src/walk.rs (score 251): path matches: ignore, walk; code references: atomicbool, build_parallel, builder, builder.add, builder.build_parallel, builder.current_dir; content mentions: above, across, actual, another, applied, apply, atomic, atomicbool
+- CHANGELOG.md (score 177): code references: path, root, threads; content mentions: another, appears, applied, behavior, bug, cargo, cases, causing
+- crates/core/flags/hiargs.rs (score 163): path matches: core; code references: builder, builder.add, current_dir, entry, path, seen; content mentions: across, actual, another, behavior, box, builder, did, different
+- crates/core/main.rs (score 158): path matches: core, main; code references: atomicbool, build_parallel, builder, entry, join, load; content mentions: appears, applied, atomic, atomicbool, behavior, below, box, builder
+- crates/ignore/src/gitignore.rs (score 150): path matches: gitignore, ignore; code references: builder, builder.add, current_dir, join, path, root; content mentions: actual, builder, cargo, cases, control, core, different, dir
+- crates/ignore/src/dir.rs (score 147): path matches: dir, ignore; code references: builder, builder.add, current_dir, entry, join, path; content mentions: across, applied, apply, below, bug, builder, cases, continue
+- crates/ignore/src/lib.rs (score 128): path matches: ignore; code references: builder, entry, entry.path, join, path, walkbuilder; content mentions: apply, atomic, box, cases, continue, control, dir, directories
+- crates/ignore/tests/gitignore_matched_path_or_any_parents_tests.rs (score 117): path matches: gitignore, ignore; code references: builder, builder.add, path, root; content mentions: builder, dir, files, gitignore, ignore, root; test file may need a regression case; paired source/test file
+
+Suggested commands:
+- `cargo test`
+- `cargo build`
+
+Acceptance criteria:
+- Resolve the behavior described by: Nondeterminism in ignore::WalkBuilder parallel multi-root walk.
+- Add or update the smallest relevant tests for the changed behavior.
+- Run the suggested verification commands and report any command that cannot run.
+
+Risks:
+- No AGENTS.md or common agent instruction file was detected.
+
+Keep the change minimal. Do not rewrite unrelated code. Verify before final response.</pre>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

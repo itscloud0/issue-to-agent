@@ -374,7 +374,11 @@ def is_test_data_file(path_lower: str) -> bool:
 
 
 def extract_acceptance_criteria(issue: Issue) -> list[str]:
-    explicit = [match.strip() for match in CHECKBOX_RE.findall(issue.body)]
+    explicit = [
+        match.strip()
+        for match in CHECKBOX_RE.findall(issue.body)
+        if not is_template_confirmation_checkbox(match)
+    ]
     if explicit:
         return explicit
 
@@ -383,6 +387,18 @@ def extract_acceptance_criteria(issue: Issue) -> list[str]:
         "Add or update the smallest relevant tests for the changed behavior.",
         "Run the suggested verification commands and report any command that cannot run.",
     ]
+
+
+def is_template_confirmation_checkbox(text: str) -> bool:
+    normalized = " ".join(text.lower().strip(" .").split())
+    return (
+        normalized == "i have a different issue"
+        or normalized.startswith("i have searched")
+        or normalized.startswith("i have read")
+        or normalized.startswith("i have reviewed")
+        or normalized.startswith("i confirm")
+        or normalized.startswith("i agree")
+    )
 
 
 def detect_risks(

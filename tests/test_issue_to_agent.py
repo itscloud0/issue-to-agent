@@ -9,7 +9,7 @@ from pathlib import Path
 
 from issue_to_agent.cli import main
 from issue_to_agent.issue import parse_github_issue_ref, parse_issue_text
-from issue_to_agent.pack import build_task_pack
+from issue_to_agent.pack import build_task_pack, extract_acceptance_criteria
 from issue_to_agent.render import render_html, render_json, render_markdown, render_prompt
 from issue_to_agent.repo import scan_repository
 
@@ -32,6 +32,34 @@ class IssueToAgentTests(unittest.TestCase):
             ("owner", "repo", "123"),
         )
         self.assertEqual(parse_github_issue_ref("owner/repo#45"), ("owner", "repo", "45"))
+
+    def test_acceptance_criteria_ignores_template_confirmation_checkbox(self):
+        issue = parse_issue_text(
+            "# Repro bug\n\n"
+            "### Please tick this box to confirm you have reviewed the above.\n\n"
+            "- [x] I have a different issue.\n"
+            "- [ ] Add a regression test for the repro.\n",
+            source="fixture",
+        )
+
+        self.assertEqual(
+            extract_acceptance_criteria(issue),
+            ["Add a regression test for the repro."],
+        )
+
+    def test_acceptance_criteria_falls_back_when_only_template_confirmation_exists(self):
+        issue = parse_issue_text(
+            "# Parallel walk is nondeterministic\n\n"
+            "- [x] I have a different issue.\n",
+            source="fixture",
+        )
+
+        criteria = extract_acceptance_criteria(issue)
+
+        self.assertIn(
+            "Resolve the behavior described by: Parallel walk is nondeterministic.",
+            criteria,
+        )
 
     def test_build_task_pack_ranks_checkout_files(self):
         issue = parse_issue_text(EXAMPLE_ISSUE.read_text(encoding="utf-8"), source="fixture")

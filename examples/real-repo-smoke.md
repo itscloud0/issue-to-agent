@@ -121,3 +121,62 @@ npm run build
 
 - The ky test suite was not run. This smoke validates task-pack generation, not the upstream type fix.
 - The generated task pack was not posted to GitHub.
+
+## Target 3
+
+- Repository: `BurntSushi/ripgrep`
+- Clone URL: `https://github.com/BurntSushi/ripgrep.git`
+- Smoke commit: `82313cf`
+- Issue: https://github.com/BurntSushi/ripgrep/issues/3419
+- Issue title: `Nondeterminism in ignore::WalkBuilder parallel multi-root walk`
+
+## Commands Run
+
+```bash
+tmpdir=$(mktemp -d /tmp/issue-to-agent-ripgrep.XXXXXX)
+git clone --depth 1 https://github.com/BurntSushi/ripgrep.git "$tmpdir/repo"
+python3 -m venv /tmp/issue-to-agent-ripgrep-venv
+/tmp/issue-to-agent-ripgrep-venv/bin/python -m pip install .
+/tmp/issue-to-agent-ripgrep-venv/bin/issue-to-agent BurntSushi/ripgrep#3419 \
+  --repo "$tmpdir/repo" \
+  --output examples/real-ripgrep-3419-task.md
+/tmp/issue-to-agent-ripgrep-venv/bin/issue-to-agent BurntSushi/ripgrep#3419 \
+  --repo "$tmpdir/repo" \
+  --format html \
+  --output demo/real-ripgrep-3419.html
+```
+
+## Generated Outputs
+
+- Markdown task pack: `examples/real-ripgrep-3419-task.md`
+- HTML report: `demo/real-ripgrep-3419.html`
+
+## Output Summary
+
+Top likely files from the generated task pack:
+
+```text
+- crates/ignore/src/walk.rs (score 251): path matches: ignore, walk; code references: atomicbool, build_parallel, builder, builder.add, builder.build_parallel, builder.current_dir; content mentions: above, across, actual, another, applied, apply, atomic, atomicbool
+- CHANGELOG.md (score 177): code references: path, root, threads; content mentions: another, appears, applied, behavior, bug, cargo, cases, causing
+- crates/core/flags/hiargs.rs (score 163): path matches: core; code references: builder, builder.add, current_dir, entry, path, seen; content mentions: across, actual, another, behavior, box, builder, did, different
+- crates/core/main.rs (score 158): path matches: core, main; code references: atomicbool, build_parallel, builder, entry, join, load; content mentions: appears, applied, atomic, atomicbool, behavior, below, box, builder
+```
+
+Suggested commands:
+
+```text
+cargo test
+cargo build
+```
+
+## Findings
+
+- The smoke produced useful first-pass Rust context: `crates/ignore/src/walk.rs` is the credible starting point for an `ignore::WalkBuilder` parallel multi-root traversal bug.
+- The first generation exposed issue-template confirmation checkboxes being treated as acceptance criteria. Those checkboxes are now filtered before falling back to behavior-based criteria.
+- The final output keeps the real issue title, URL, and `bug` label, and does not include the template confirmation checkbox as an acceptance criterion.
+- The repo has no `AGENTS.md`, `CLAUDE.md`, or common agent instruction file, so the risk section correctly calls that out.
+
+## Not Verified
+
+- The ripgrep test suite was not run. This smoke validates task-pack generation, not the upstream traversal fix.
+- The generated task pack was not posted to GitHub.
