@@ -428,14 +428,8 @@ class IssueToAgentTests(unittest.TestCase):
         self.assertIn("demo/issue-checkout-timeout.html", readme)
         self.assertIn("demo/real-ky-863.html", readme)
         self.assertIn("agent-ready", readme)
-class DetectToxNoxUvTests(unittest.TestCase):
-    def test_detects_tox_when_tox_ini_has_tox_section(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            repo = Path(tmpdir)
-            (repo / "tox.ini").write_text("[tox]\nenvlist = py311\n", encoding="utf-8")
-
-<<<<<<< HEAD
-    def test_benchmark_fixtures_cover_migration_scope(self):
+        
+def test_benchmark_fixtures_cover_migration_scope(self):
         payload = json.loads(
             (ROOT / "benchmark" / "fixtures" / "issues.json").read_text(
                 encoding="utf-8"
@@ -452,8 +446,14 @@ class DetectToxNoxUvTests(unittest.TestCase):
             self.assertIn("github.com", fixture["closing_pr_url"])
             self.assertTrue(fixture["pr_base_ref"])
             self.assertTrue(fixture["changed_files"])
+            
+            
+class DetectToxNoxUvTests(unittest.TestCase):
+    def test_detects_tox_when_tox_ini_has_tox_section(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "tox.ini").write_text("[tox]\nenvlist = py311\n", encoding="utf-8")
 
-=======
             profile = scan_repository(repo)
 
             self.assertIn("tox", profile.commands)
@@ -524,7 +524,7 @@ class DetectToxNoxUvTests(unittest.TestCase):
             profile = scan_repository(repo)
 
             self.assertIn("uv run pytest", profile.commands)
->>>>>>> 04a872c (Detect tox, nox, and uv test commands)
+
 
 if __name__ == "__main__":
     unittest.main()
