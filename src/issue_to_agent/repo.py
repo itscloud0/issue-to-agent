@@ -248,8 +248,7 @@ def detect_commands(root: Path) -> list[str]:
     justfile = root / "justfile"
     if justfile.is_file():
         commands.extend(detect_make_targets(justfile, prefix="just"))
-        
-        
+
     commands.extend(detect_tox_commands(root))
     commands.extend(detect_nox_commands(root))
     commands.extend(detect_uv_commands(root))
@@ -278,11 +277,12 @@ def detect_make_targets(path: Path, prefix: str) -> list[str]:
             commands.append(f"{prefix} {name}")
     return commands
 
+
 def detect_tox_commands(root: Path) -> list[str]:
     tox_ini = root / "tox.ini"
     if tox_ini.is_file():
         text = read_text(tox_ini) or ""
-        if "[tox]" in text:
+        if re.search(r"(?m)^\s*\[tox\]\s*$", text):
             return ["tox"]
     return []
 
@@ -297,15 +297,13 @@ def detect_nox_commands(root: Path) -> list[str]:
 
 def detect_uv_commands(root: Path) -> list[str]:
     commands: list[str] = []
-    has_uv = (root / "uv.lock").is_file()
-    if not has_uv:
-        pyproject = root / "pyproject.toml"
-        if pyproject.is_file():
-            text = read_text(pyproject) or ""
-            has_uv = "[tool.uv]" in text
+    pyproject = root / "pyproject.toml"
+    pyproject_text = read_text(pyproject) or "" if pyproject.is_file() else ""
+    has_uv = (root / "uv.lock").is_file() or re.search(
+        r"(?m)^\s*\[tool\.uv\]\s*$", pyproject_text
+    )
     if has_uv:
         commands.append("uv sync")
-        pyproject_text = read_text(root / "pyproject.toml") or "" if (root / "pyproject.toml").is_file() else ""
         if "pytest" in pyproject_text.lower():
             commands.append("uv run pytest")
         elif (root / "tests").is_dir():
