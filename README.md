@@ -67,6 +67,12 @@ This repo includes real smoke tests against `pallets/click#3571`, `sindresorhus/
 The Click smoke found plausible files first: `src/click/termui.py`, `src/click/_termui_impl.py`, and `tests/test_termui.py`. The ky smoke found `source/types/hooks.ts` first for a TypeScript hook typing issue.
 The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-walk nondeterminism bug.
 
+## Evidence
+
+- `BENCHMARK.md` compares file ranking against a filename/path keyword baseline on 15 closed issues from Click, ky, and ripgrep.
+- `EVALUATION_PLAN.md` documents the metrics, baseline, known weaknesses, and stop criteria.
+- `DEMAND_EVIDENCE.md` documents current demand signals and marks demand as `UNKNOWN` until independent usage is proven.
+
 ## Installation
 
 From a checkout:

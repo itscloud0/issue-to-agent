@@ -105,5 +105,6 @@ It shows taste in AI SWE workflows: not another model wrapper, but practical too
 - Skill metadata tests pass.
 - GitHub Action sanity checks pass.
 - Safety scan finds no secrets, env files, generated caches, or placeholder metadata.
-- Product value >= 9/10, talent signal >= 9/10, launch readiness >= 9/10.
-- Not published on 2026-06-17 because one public repo was already published today.
+- Demand evidence, product fit, validation, usability, engineering, and distribution gates are recorded as `PASS`, `FAIL`, or `UNKNOWN`.
+- Any `PASS` gate cites concrete evidence instead of an internal score.
+- Known failures and stop/reposition criteria are documented before stronger claims are made.
