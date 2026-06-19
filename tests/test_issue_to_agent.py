@@ -428,7 +428,13 @@ class IssueToAgentTests(unittest.TestCase):
         self.assertIn("demo/issue-checkout-timeout.html", readme)
         self.assertIn("demo/real-ky-863.html", readme)
         self.assertIn("agent-ready", readme)
+class DetectToxNoxUvTests(unittest.TestCase):
+    def test_detects_tox_when_tox_ini_has_tox_section(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "tox.ini").write_text("[tox]\nenvlist = py311\n", encoding="utf-8")
 
+<<<<<<< HEAD
     def test_benchmark_fixtures_cover_migration_scope(self):
         payload = json.loads(
             (ROOT / "benchmark" / "fixtures" / "issues.json").read_text(
@@ -447,6 +453,78 @@ class IssueToAgentTests(unittest.TestCase):
             self.assertTrue(fixture["pr_base_ref"])
             self.assertTrue(fixture["changed_files"])
 
+=======
+            profile = scan_repository(repo)
+
+            self.assertIn("tox", profile.commands)
+
+    def test_ignores_tox_ini_without_tox_section(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "tox.ini").write_text("[pytest]\naddopts = -v\n", encoding="utf-8")
+
+            profile = scan_repository(repo)
+
+            self.assertNotIn("tox", profile.commands)
+
+    def test_detects_nox_when_noxfile_exists_and_nonempty(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "noxfile.py").write_text(
+                "import nox\n\n@nox.session\ndef tests(session): session.run('pytest')\n",
+                encoding="utf-8",
+            )
+
+            profile = scan_repository(repo)
+
+            self.assertIn("nox", profile.commands)
+
+    def test_ignores_empty_noxfile(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "noxfile.py").write_text("", encoding="utf-8")
+
+            profile = scan_repository(repo)
+
+            self.assertNotIn("nox", profile.commands)
+
+    def test_detects_uv_via_uv_lock(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "uv.lock").write_text("# uv lockfile\n", encoding="utf-8")
+            (repo / "pyproject.toml").write_text(
+                "[project]\nname = 'demo'\n\n[tool.uv]\n", encoding="utf-8"
+            )
+
+            profile = scan_repository(repo)
+
+            self.assertIn("uv sync", profile.commands)
+
+    def test_detects_uv_via_pyproject_tool_uv_section(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "pyproject.toml").write_text(
+                "[project]\nname = 'demo'\n\n[tool.uv]\ndev-dependencies = []\n",
+                encoding="utf-8",
+            )
+
+            profile = scan_repository(repo)
+
+            self.assertIn("uv sync", profile.commands)
+
+    def test_uv_suggests_pytest_when_pytest_in_pyproject(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "uv.lock").write_text("# uv lockfile\n", encoding="utf-8")
+            (repo / "pyproject.toml").write_text(
+                "[project]\nname = 'demo'\n[tool.uv]\n[tool.pytest.ini_options]\ntestpaths = ['tests']\n",
+                encoding="utf-8",
+            )
+
+            profile = scan_repository(repo)
+
+            self.assertIn("uv run pytest", profile.commands)
+>>>>>>> 04a872c (Detect tox, nox, and uv test commands)
 
 if __name__ == "__main__":
     unittest.main()

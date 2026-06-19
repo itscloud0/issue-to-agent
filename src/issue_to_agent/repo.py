@@ -248,7 +248,11 @@ def detect_commands(root: Path) -> list[str]:
     justfile = root / "justfile"
     if justfile.is_file():
         commands.extend(detect_make_targets(justfile, prefix="just"))
-
+        
+        
+    commands.extend(detect_tox_commands(root))
+    commands.extend(detect_nox_commands(root))
+    commands.extend(detect_uv_commands(root))
     return dedupe(commands)
 
 
@@ -272,6 +276,40 @@ def detect_make_targets(path: Path, prefix: str) -> list[str]:
     for name in ("test", "lint", "check", "build"):
         if re.search(rf"^{re.escape(name)}\s*:", text, flags=re.MULTILINE):
             commands.append(f"{prefix} {name}")
+    return commands
+
+def detect_tox_commands(root: Path) -> list[str]:
+    tox_ini = root / "tox.ini"
+    if tox_ini.is_file():
+        text = read_text(tox_ini) or ""
+        if "[tox]" in text:
+            return ["tox"]
+    return []
+
+
+def detect_nox_commands(root: Path) -> list[str]:
+    if (root / "noxfile.py").is_file():
+        text = read_text(root / "noxfile.py") or ""
+        if text.strip():
+            return ["nox"]
+    return []
+
+
+def detect_uv_commands(root: Path) -> list[str]:
+    commands: list[str] = []
+    has_uv = (root / "uv.lock").is_file()
+    if not has_uv:
+        pyproject = root / "pyproject.toml"
+        if pyproject.is_file():
+            text = read_text(pyproject) or ""
+            has_uv = "[tool.uv]" in text
+    if has_uv:
+        commands.append("uv sync")
+        pyproject_text = read_text(root / "pyproject.toml") or "" if (root / "pyproject.toml").is_file() else ""
+        if "pytest" in pyproject_text.lower():
+            commands.append("uv run pytest")
+        elif (root / "tests").is_dir():
+            commands.append("uv run python -m unittest discover -s tests")
     return commands
 
 
