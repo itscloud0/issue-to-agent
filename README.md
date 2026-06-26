@@ -120,6 +120,12 @@ Include tracked work-in-progress changes:
 issue-to-agent OWNER/REPO#123 --repo . --include-diff --output ISSUE_AGENT_TASK.md
 ```
 
+Use repo-specific config:
+
+```bash
+issue-to-agent OWNER/REPO#123 --repo . --config .issue-to-agent.json
+```
+
 HTML for maintainers:
 
 ```bash
@@ -181,8 +187,30 @@ You can also reuse the composite action directly:
     issue-body: ${{ github.event.issue.body }}
     issue-url: ${{ github.event.issue.html_url }}
     issue-number: ${{ github.event.issue.number }}
+    config-path: .issue-to-agent.json
     output-path: ISSUE_AGENT_TASK.md
 ```
+
+## Project Config
+
+Config is optional. With no config file, `issue-to-agent` keeps its built-in defaults.
+
+The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--repo`. Use `--config` or the composite action `config-path` input to pass a specific file.
+
+```json
+{
+  "ignored_paths": ["docs/**", "generated/**"],
+  "command_preferences": ["uv run pytest", "make test"],
+  "ranking_boosts": {
+    "src/**": 12,
+    "tests/**": 8
+  }
+}
+```
+
+- `ignored_paths` excludes matching files from relevance ranking.
+- `command_preferences` puts exact commands first in the suggested command list.
+- `ranking_boosts` adds a non-negative integer score to already-matched files whose path matches a glob.
 
 ## What It Detects
 
@@ -196,6 +224,7 @@ You can also reuse the composite action directly:
 - checklist items in the issue body as acceptance criteria
 - sensitive keywords such as auth, billing, payment, migration, secret, and token
 - optional tracked git diff context when `--include-diff` is passed
+- optional project config for ignored paths, command preferences, and ranking boosts
 
 ## When To Use It
 
@@ -226,7 +255,6 @@ You can also reuse the composite action directly:
 
 ## Roadmap
 
-- Add config for ignored paths, command preferences, and ranking boosts.
 - Add more real-repo fixtures for Go.
 - Add richer Cursor and Copilot CLI workflow examples.
 

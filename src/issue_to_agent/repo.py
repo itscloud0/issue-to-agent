@@ -3,9 +3,16 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+from fnmatch import fnmatch
 from pathlib import Path
 
-from .models import AgentInstruction, DiffContext, RepoFile, RepositoryProfile
+from .models import (
+    AgentInstruction,
+    DiffContext,
+    ProjectConfig,
+    RepoFile,
+    RepositoryProfile,
+)
 
 EXCLUDED_DIRS = {
     ".git",
@@ -139,22 +146,102 @@ STOPWORDS = {
 WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]{2,}")
 MAX_FILE_BYTES = 120_000
 DEFAULT_MAX_DIFF_CHARS = 12_000
+CONFIG_FILE_NAMES = (".issue-to-agent.json", "issue-to-agent.json")
 
 
-def scan_repository(repo_root: str | Path) -> RepositoryProfile:
+def scan_repository(
+    repo_root: str | Path,
+    config_path: str | Path | None = None,
+) -> RepositoryProfile:
     root = Path(repo_root).resolve()
     if not root.exists():
         raise ValueError(f"repo path does not exist: {repo_root}")
     if not root.is_dir():
         raise ValueError(f"repo path is not a directory: {repo_root}")
 
-    files = list(iter_repo_files(root))
+    config = load_project_config(root, config_path)
+    files = list(iter_repo_files(root, ignored_paths=config.ignored_paths))
     return RepositoryProfile(
         root=root,
         instructions=discover_instructions(root),
-        commands=detect_commands(root),
+        commands=apply_command_preferences(
+            detect_commands(root),
+            config.command_preferences,
+        ),
         files=files,
+        config=config,
     )
+
+
+def load_project_config(
+    repo_root: Path,
+    config_path: str | Path | None = None,
+) -> ProjectConfig:
+    path = resolve_config_path(repo_root, config_path)
+    if path is None:
+        return ProjectConfig()
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"invalid issue-to-agent config JSON at {path}: {exc.msg}") from exc
+    except OSError as exc:
+        raise ValueError(f"could not read issue-to-agent config at {path}: {exc}") from exc
+
+    if not isinstance(payload, dict):
+        raise ValueError(f"issue-to-agent config must be a JSON object: {path}")
+
+    return ProjectConfig(
+        source=path.relative_to(repo_root).as_posix()
+        if path.is_relative_to(repo_root)
+        else str(path),
+        ignored_paths=read_string_list(payload, "ignored_paths", path),
+        command_preferences=read_string_list(payload, "command_preferences", path),
+        ranking_boosts=read_ranking_boosts(payload, path),
+    )
+
+
+def resolve_config_path(
+    repo_root: Path,
+    config_path: str | Path | None,
+) -> Path | None:
+    if config_path:
+        path = Path(config_path)
+        if not path.is_absolute():
+            path = repo_root / path
+        if not path.is_file():
+            raise ValueError(f"issue-to-agent config file does not exist: {path}")
+        return path.resolve()
+
+    for name in CONFIG_FILE_NAMES:
+        path = repo_root / name
+        if path.is_file():
+            return path
+    return None
+
+
+def read_string_list(payload: dict[str, object], key: str, path: Path) -> list[str]:
+    value = payload.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ValueError(f"{key} must be a list of strings in {path}")
+    return [item.strip() for item in value if item.strip()]
+
+
+def read_ranking_boosts(payload: dict[str, object], path: Path) -> dict[str, int]:
+    value = payload.get("ranking_boosts", {})
+    if not isinstance(value, dict):
+        raise ValueError(f"ranking_boosts must be an object in {path}")
+
+    boosts: dict[str, int] = {}
+    for pattern, boost in value.items():
+        if not isinstance(pattern, str) or not pattern.strip():
+            raise ValueError(f"ranking_boosts keys must be non-empty strings in {path}")
+        if not isinstance(boost, int) or isinstance(boost, bool) or boost < 0:
+            raise ValueError(
+                f"ranking_boosts values must be non-negative integers in {path}"
+            )
+        boosts[pattern.strip()] = boost
+    return boosts
 
 
 def collect_git_diff_context(
@@ -226,12 +313,20 @@ def git_output(root: Path, args: list[str]) -> subprocess.CompletedProcess[str] 
         return None
 
 
-def iter_repo_files(root: Path) -> list[RepoFile]:
+def iter_repo_files(
+    root: Path,
+    ignored_paths: list[str] | None = None,
+) -> list[RepoFile]:
+    ignored_paths = ignored_paths or []
     results: list[RepoFile] = []
     for path in sorted(root.rglob("*")):
         if not path.is_file():
             continue
-        if any(part in EXCLUDED_DIRS for part in path.relative_to(root).parts):
+        relative_path = path.relative_to(root).as_posix()
+        relative_parts = path.relative_to(root).parts
+        if any(part in EXCLUDED_DIRS for part in relative_parts):
+            continue
+        if any(matches_path_pattern(relative_path, pattern) for pattern in ignored_paths):
             continue
         if not is_text_candidate(path):
             continue
@@ -326,6 +421,15 @@ def detect_commands(root: Path) -> list[str]:
     return dedupe(commands)
 
 
+def apply_command_preferences(
+    commands: list[str],
+    command_preferences: list[str],
+) -> list[str]:
+    if not command_preferences:
+        return commands
+    return dedupe(command_preferences + commands)
+
+
 def detect_npm_script_commands(path: Path) -> list[str]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -408,3 +512,18 @@ def dedupe(items: list[str]) -> list[str]:
             seen.add(item)
             result.append(item)
     return result
+
+
+def matches_path_pattern(path: str, pattern: str) -> bool:
+    normalized_pattern = pattern.strip().lstrip("./")
+    if not normalized_pattern:
+        return False
+    normalized_path = path.lstrip("./")
+    if normalized_pattern.endswith("/"):
+        return normalized_path.startswith(normalized_pattern)
+    if "/" not in normalized_pattern:
+        parts = normalized_path.split("/")
+        return fnmatch(normalized_path, normalized_pattern) or any(
+            fnmatch(part, normalized_pattern) for part in parts
+        )
+    return fnmatch(normalized_path, normalized_pattern)

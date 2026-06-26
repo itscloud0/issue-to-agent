@@ -5,7 +5,7 @@ from collections import Counter
 from pathlib import Path
 
 from .models import DiffContext, FileHit, Issue, RepoFile, RepositoryProfile, TaskPack
-from .repo import collect_git_diff_context, scan_repository, tokenize
+from .repo import collect_git_diff_context, matches_path_pattern, scan_repository, tokenize
 
 CHECKBOX_RE = re.compile(r"^\s*[-*]\s+\[[ xX]\]\s+(.+?)\s*$", re.MULTILINE)
 DOTTED_EXTENSION_RE = re.compile(r"(?<![\w/])\.([A-Za-z0-9]{1,6})(?![A-Za-z0-9])")
@@ -40,8 +40,9 @@ def build_task_pack(
     profile_name: str = "codex",
     include_diff_context: bool = False,
     max_diff_chars: int = 12_000,
+    config_path: str | Path | None = None,
 ) -> TaskPack:
-    repository = scan_repository(repo_root)
+    repository = scan_repository(repo_root, config_path=config_path)
     relevant_files = rank_files(issue, repository, max_files=max_files)
     acceptance_criteria = extract_acceptance_criteria(issue)
     risks = detect_risks(issue, repository, relevant_files)
@@ -90,8 +91,44 @@ def rank_files(
             hits.append(hit)
 
     hits = boost_companion_file_hits(hits)
+    hits = apply_configured_ranking_boosts(hits, repository.config.ranking_boosts)
     hits.sort(key=lambda hit: (-hit.score, hit.path))
     return hits[:max_files]
+
+
+def apply_configured_ranking_boosts(
+    hits: list[FileHit],
+    ranking_boosts: dict[str, int],
+) -> list[FileHit]:
+    if not ranking_boosts:
+        return hits
+
+    boosted_hits: list[FileHit] = []
+    for hit in hits:
+        matches = [
+            (pattern, boost)
+            for pattern, boost in ranking_boosts.items()
+            if matches_path_pattern(hit.path, pattern)
+        ]
+        if not matches:
+            boosted_hits.append(hit)
+            continue
+
+        boost_total = sum(boost for _, boost in matches)
+        reasons = hit.reasons + [
+            f"configured boost: {pattern} ({boost:+d})"
+            for pattern, boost in matches
+            if boost
+        ]
+        boosted_hits.append(
+            FileHit(
+                path=hit.path,
+                score=hit.score + boost_total,
+                reasons=reasons,
+                snippets=hit.snippets,
+            )
+        )
+    return boosted_hits
 
 
 def select_scoring_terms(issue_terms: set[str], files: list[RepoFile]) -> set[str]:

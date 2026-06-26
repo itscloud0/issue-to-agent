@@ -34,6 +34,10 @@ inputs:
     description: "Prompt profile: codex, claude, cursor, or generic."
     required: false
     default: codex
+  config-path:
+    description: Path to issue-to-agent JSON config. Auto-discovered from the repo when empty.
+    required: false
+    default: ""
   include-diff:
     description: Include current tracked git diff context.
     required: false
@@ -93,6 +97,9 @@ runs:
           --max-diff-chars "${{ inputs.max-diff-chars }}" \
           --output "${{ inputs.output-path }}"
         )
+        if [ -n "${{ inputs.config-path }}" ]; then
+          args+=(--config "${{ inputs.config-path }}")
+        fi
         if [ "${{ inputs.include-diff }}" = "true" ]; then
           args+=(--include-diff)
         fi

@@ -384,6 +384,67 @@ class IssueToAgentTests(unittest.TestCase):
             payload = json.loads(render_json(pack))
             self.assertIn("src/demo.py", payload["diff_context"]["summary"])
 
+    def test_project_config_ignores_paths_and_boosts_ranking(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "docs").mkdir()
+            (repo / "src" / "shop").mkdir(parents=True)
+            (repo / "tests").mkdir()
+            (repo / "pyproject.toml").write_text(
+                "[project]\nname = \"configdemo\"\n",
+                encoding="utf-8",
+            )
+            (repo / ".issue-to-agent.json").write_text(
+                json.dumps(
+                    {
+                        "ignored_paths": ["docs/**"],
+                        "command_preferences": ["make test"],
+                        "ranking_boosts": {"tests/**": 80},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (repo / "docs" / "checkout.md").write_text(
+                "checkout timeout retry payment " * 30,
+                encoding="utf-8",
+            )
+            (repo / "src" / "shop" / "checkout.py").write_text(
+                "def retry_checkout():\n    return 'timeout'\n",
+                encoding="utf-8",
+            )
+            (repo / "tests" / "test_checkout.py").write_text(
+                "def test_checkout_timeout_retry():\n    assert True\n",
+                encoding="utf-8",
+            )
+            issue = parse_issue_text(
+                "# Checkout timeout needs a retry regression test\n\n"
+                "Payment retry should handle timeout failures.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(issue, repo, max_files=3)
+
+            paths = [hit.path for hit in pack.relevant_files]
+            self.assertEqual(paths[0], "tests/test_checkout.py")
+            self.assertIn("src/shop/checkout.py", paths)
+            self.assertNotIn("docs/checkout.md", paths)
+            self.assertEqual(pack.repository.commands[0], "make test")
+            self.assertIn("python -m pip install .", pack.repository.commands)
+            self.assertEqual(pack.repository.config.source, ".issue-to-agent.json")
+            self.assertIn("configured boost: tests/** (+80)", pack.relevant_files[0].reasons)
+
+    def test_project_config_rejects_negative_ranking_boost(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / ".issue-to-agent.json").write_text(
+                json.dumps({"ranking_boosts": {"tests/**": -1}}),
+                encoding="utf-8",
+            )
+            issue = parse_issue_text("# Fixture\n\nBody", source="fixture")
+
+            with self.assertRaisesRegex(ValueError, "non-negative integers"):
+                build_task_pack(issue, repo)
+
     def test_cli_writes_json_output(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output = Path(tmpdir) / "pack.json"

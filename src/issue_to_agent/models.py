@@ -40,11 +40,28 @@ class RepoFile:
 
 
 @dataclass(frozen=True)
+class ProjectConfig:
+    source: str = ""
+    ignored_paths: list[str] = field(default_factory=list)
+    command_preferences: list[str] = field(default_factory=list)
+    ranking_boosts: dict[str, int] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "source": self.source,
+            "ignored_paths": self.ignored_paths,
+            "command_preferences": self.command_preferences,
+            "ranking_boosts": self.ranking_boosts,
+        }
+
+
+@dataclass(frozen=True)
 class RepositoryProfile:
     root: Path
     instructions: list[AgentInstruction]
     commands: list[str]
     files: list[RepoFile]
+    config: ProjectConfig = field(default_factory=ProjectConfig)
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -52,6 +69,7 @@ class RepositoryProfile:
             "instructions": [instruction.to_dict() for instruction in self.instructions],
             "commands": self.commands,
             "file_count": len(self.files),
+            "config": self.config.to_dict(),
         }
 
 

@@ -45,6 +45,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Prompt style for the generated task pack. Defaults to codex.",
     )
     parser.add_argument(
+        "--config",
+        help=(
+            "Path to issue-to-agent JSON config. Defaults to auto-discovering "
+            ".issue-to-agent.json or issue-to-agent.json in --repo."
+        ),
+    )
+    parser.add_argument(
         "--include-diff",
         action="store_true",
         help="Include current tracked git diff context from --repo.",
@@ -76,6 +83,7 @@ def main(argv: list[str] | None = None) -> int:
             profile_name=args.profile,
             include_diff_context=args.include_diff,
             max_diff_chars=args.max_diff_chars,
+            config_path=args.config,
         )
     except ValueError as exc:
         parser.error(str(exc))
