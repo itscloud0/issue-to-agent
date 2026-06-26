@@ -4,8 +4,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from .models import FileHit, Issue, RepoFile, RepositoryProfile, TaskPack
-from .repo import scan_repository, tokenize
+from .models import DiffContext, FileHit, Issue, RepoFile, RepositoryProfile, TaskPack
+from .repo import collect_git_diff_context, scan_repository, tokenize
 
 CHECKBOX_RE = re.compile(r"^\s*[-*]\s+\[[ xX]\]\s+(.+?)\s*$", re.MULTILINE)
 DOTTED_EXTENSION_RE = re.compile(r"(?<![\w/])\.([A-Za-z0-9]{1,6})(?![A-Za-z0-9])")
@@ -38,11 +38,18 @@ def build_task_pack(
     repo_root: str | Path,
     max_files: int = 8,
     profile_name: str = "codex",
+    include_diff_context: bool = False,
+    max_diff_chars: int = 12_000,
 ) -> TaskPack:
     repository = scan_repository(repo_root)
     relevant_files = rank_files(issue, repository, max_files=max_files)
     acceptance_criteria = extract_acceptance_criteria(issue)
     risks = detect_risks(issue, repository, relevant_files)
+    diff_context = (
+        collect_git_diff_context(repo_root, max_chars=max_diff_chars)
+        if include_diff_context
+        else None
+    )
     prompt = render_agent_prompt(
         issue=issue,
         repository=repository,
@@ -50,6 +57,7 @@ def build_task_pack(
         acceptance_criteria=acceptance_criteria,
         risks=risks,
         profile_name=profile_name,
+        diff_context=diff_context,
     )
     return TaskPack(
         issue=issue,
@@ -58,6 +66,7 @@ def build_task_pack(
         acceptance_criteria=acceptance_criteria,
         risks=risks,
         prompt=prompt,
+        diff_context=diff_context,
     )
 
 
@@ -435,6 +444,7 @@ def render_agent_prompt(
     acceptance_criteria: list[str],
     risks: list[str],
     profile_name: str,
+    diff_context: DiffContext | None = None,
 ) -> str:
     profile = profile_name.lower()
     intro = {
@@ -466,6 +476,14 @@ def render_agent_prompt(
         lines.extend(f"- `{command}`" for command in repository.commands)
     else:
         lines.append("- Inspect README/package metadata for install and test commands.")
+
+    if diff_context is not None:
+        lines.extend(["", "Current tracked git diff context:"])
+        lines.append(diff_context.summary)
+        if diff_context.patch:
+            lines.extend(["```diff", diff_context.patch.rstrip(), "```"])
+        if diff_context.truncated:
+            lines.append("Inspect the local git diff before editing; this patch was truncated.")
 
     lines.extend(["", "Acceptance criteria:"])
     lines.extend(f"- {criterion}" for criterion in acceptance_criteria)

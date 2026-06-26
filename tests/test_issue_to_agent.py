@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from contextlib import redirect_stderr
@@ -326,6 +327,63 @@ class IssueToAgentTests(unittest.TestCase):
         ):
             self.assertIn(section, html)
 
+    def test_build_task_pack_can_include_git_diff_context(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = Path(tmpdir)
+            (repo / "src").mkdir()
+            (repo / "tests").mkdir()
+            (repo / "pyproject.toml").write_text(
+                "[project]\nname = \"diffdemo\"\n",
+                encoding="utf-8",
+            )
+            module = repo / "src" / "demo.py"
+            module.write_text("def answer():\n    return 41\n", encoding="utf-8")
+            (repo / "tests" / "test_demo.py").write_text(
+                "from demo import answer\n\n"
+                "def test_answer():\n"
+                "    assert answer() == 42\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init"], cwd=repo, check=True, stdout=subprocess.PIPE)
+            subprocess.run(["git", "add", "."], cwd=repo, check=True, stdout=subprocess.PIPE)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Test User",
+                    "-c",
+                    "user.email=test@example.com",
+                    "commit",
+                    "-m",
+                    "initial",
+                ],
+                cwd=repo,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            module.write_text("def answer():\n    return 42\n", encoding="utf-8")
+            issue = parse_issue_text(
+                "# answer returns the wrong value\n\nFix answer() so the test passes.",
+                source="fixture",
+            )
+
+            pack = build_task_pack(
+                issue,
+                repo,
+                include_diff_context=True,
+                max_diff_chars=4000,
+            )
+
+            self.assertIsNotNone(pack.diff_context)
+            assert pack.diff_context is not None
+            self.assertIn("src/demo.py", pack.diff_context.summary)
+            self.assertIn("-    return 41", pack.diff_context.patch)
+            self.assertIn("+    return 42", pack.diff_context.patch)
+            self.assertIn("Current tracked git diff context", pack.prompt)
+            self.assertIn("+    return 42", render_markdown(pack))
+            payload = json.loads(render_json(pack))
+            self.assertIn("src/demo.py", payload["diff_context"]["summary"])
+
     def test_cli_writes_json_output(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output = Path(tmpdir) / "pack.json"
@@ -337,6 +395,7 @@ class IssueToAgentTests(unittest.TestCase):
                     str(EXAMPLE_REPO),
                     "--format",
                     "json",
+                    "--include-diff",
                     "--output",
                     str(output),
                 ]
@@ -345,6 +404,7 @@ class IssueToAgentTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             payload = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(payload["issue"]["title"], "Checkout retry fails after payment timeout")
+            self.assertIn("summary", payload["diff_context"])
     def test_cli_writes_prompt_only_output(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output = Path(tmpdir) / "prompt.txt"

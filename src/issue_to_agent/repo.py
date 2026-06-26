@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from pathlib import Path
 
-from .models import AgentInstruction, RepoFile, RepositoryProfile
+from .models import AgentInstruction, DiffContext, RepoFile, RepositoryProfile
 
 EXCLUDED_DIRS = {
     ".git",
@@ -137,6 +138,7 @@ STOPWORDS = {
 
 WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]{2,}")
 MAX_FILE_BYTES = 120_000
+DEFAULT_MAX_DIFF_CHARS = 12_000
 
 
 def scan_repository(repo_root: str | Path) -> RepositoryProfile:
@@ -153,6 +155,75 @@ def scan_repository(repo_root: str | Path) -> RepositoryProfile:
         commands=detect_commands(root),
         files=files,
     )
+
+
+def collect_git_diff_context(
+    repo_root: str | Path,
+    max_chars: int = DEFAULT_MAX_DIFF_CHARS,
+) -> DiffContext:
+    if max_chars < 1:
+        raise ValueError("--max-diff-chars must be at least 1")
+
+    root = Path(repo_root).resolve()
+    work_tree = git_output(root, ["rev-parse", "--is-inside-work-tree"])
+    if work_tree is None or work_tree.returncode != 0 or work_tree.stdout.strip() != "true":
+        return DiffContext(
+            summary="Git diff unavailable: repo is not inside a git work tree.",
+            patch="",
+        )
+
+    has_head = git_output(root, ["rev-parse", "--verify", "HEAD"])
+    if has_head is not None and has_head.returncode == 0:
+        pathspec = ["HEAD", "--", "."]
+    else:
+        pathspec = ["--", "."]
+
+    stat = git_output(
+        root,
+        ["diff", "--no-ext-diff", "--no-color", "--stat", *pathspec],
+    )
+    patch = git_output(
+        root,
+        [
+            "diff",
+            "--no-ext-diff",
+            "--no-color",
+            "--find-renames",
+            "--unified=3",
+            *pathspec,
+        ],
+    )
+    if stat is None or patch is None:
+        return DiffContext(summary="Git diff unavailable: git command failed.", patch="")
+
+    if stat.returncode != 0 or patch.returncode != 0:
+        detail = (stat.stderr or patch.stderr).strip().splitlines()
+        suffix = f" {detail[0]}" if detail else ""
+        return DiffContext(summary=f"Git diff unavailable:{suffix}".strip(), patch="")
+
+    patch_text = patch.stdout.strip()
+    truncated = len(patch_text) > max_chars
+    if truncated:
+        patch_text = patch_text[:max_chars].rstrip() + "\n[diff truncated]"
+
+    return DiffContext(
+        summary=stat.stdout.strip() or "No tracked git diff detected.",
+        patch=patch_text,
+        truncated=truncated,
+    )
+
+
+def git_output(root: Path, args: list[str]) -> subprocess.CompletedProcess[str] | None:
+    try:
+        return subprocess.run(
+            ["git", "-C", str(root), *args],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except OSError:
+        return None
 
 
 def iter_repo_files(root: Path) -> list[RepoFile]:

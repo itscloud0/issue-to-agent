@@ -44,6 +44,17 @@ def build_parser() -> argparse.ArgumentParser:
         default="codex",
         help="Prompt style for the generated task pack. Defaults to codex.",
     )
+    parser.add_argument(
+        "--include-diff",
+        action="store_true",
+        help="Include current tracked git diff context from --repo.",
+    )
+    parser.add_argument(
+        "--max-diff-chars",
+        type=int,
+        default=12000,
+        help="Maximum git diff patch characters when --include-diff is set. Defaults to 12000.",
+    )
     return parser
 
 
@@ -53,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.max_files < 1:
         parser.error("--max-files must be at least 1")
+    if args.max_diff_chars < 1:
+        parser.error("--max-diff-chars must be at least 1")
 
     try:
         issue = load_issue(args.issue)
@@ -61,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
             repo_root=args.repo,
             max_files=args.max_files,
             profile_name=args.profile,
+            include_diff_context=args.include_diff,
+            max_diff_chars=args.max_diff_chars,
         )
     except ValueError as exc:
         parser.error(str(exc))

@@ -72,6 +72,20 @@ class FileHit:
 
 
 @dataclass(frozen=True)
+class DiffContext:
+    summary: str
+    patch: str
+    truncated: bool = False
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "summary": self.summary,
+            "patch": self.patch,
+            "truncated": self.truncated,
+        }
+
+
+@dataclass(frozen=True)
 class TaskPack:
     issue: Issue
     repository: RepositoryProfile
@@ -79,6 +93,7 @@ class TaskPack:
     acceptance_criteria: list[str]
     risks: list[str]
     prompt: str
+    diff_context: DiffContext | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -88,4 +103,7 @@ class TaskPack:
             "acceptance_criteria": self.acceptance_criteria,
             "risks": self.risks,
             "prompt": self.prompt,
+            "diff_context": (
+                self.diff_context.to_dict() if self.diff_context is not None else None
+            ),
         }

@@ -3,7 +3,7 @@ from __future__ import annotations
 import html
 import json
 
-from .models import TaskPack
+from .models import DiffContext, TaskPack
 
 
 def render_json(pack: TaskPack) -> str:
@@ -49,6 +49,8 @@ def render_markdown(pack: TaskPack) -> str:
     else:
         lines.append("No relevant files were detected. Start with repo search.")
         lines.append("")
+
+    append_markdown_diff_context(lines, pack.diff_context)
 
     lines.extend(["## Suggested Commands", ""])
     if pack.repository.commands:
@@ -119,6 +121,7 @@ def render_html(pack: TaskPack) -> str:
         """
         for instruction in pack.repository.instructions
     ) or "<p>No agent instruction file detected.</p>"
+    diff_section = render_diff_section(pack.diff_context)
 
     document = f"""<!doctype html>
 <html lang="en">
@@ -283,6 +286,7 @@ def render_html(pack: TaskPack) -> str:
           {source_line}
           <p class="body-excerpt">{body_excerpt}</p>
         </section>
+        {diff_section}
         <section>
           <h2>Likely files</h2>
           {file_cards}
@@ -319,6 +323,45 @@ def render_html(pack: TaskPack) -> str:
 
 def render_prompt(pack: TaskPack) -> str:
     return pack.prompt
+
+def append_markdown_diff_context(
+    lines: list[str],
+    diff_context: DiffContext | None,
+) -> None:
+    if diff_context is None:
+        return
+
+    lines.extend(["## Git Diff Context", "", diff_context.summary, ""])
+    if diff_context.patch:
+        lines.extend(["```diff", diff_context.patch.rstrip(), "```", ""])
+    if diff_context.truncated:
+        lines.extend(
+            [
+                "> Diff patch truncated. Inspect the local git diff before editing.",
+                "",
+            ]
+        )
+
+
+def render_diff_section(diff_context: DiffContext | None) -> str:
+    if diff_context is None:
+        return ""
+
+    patch = ""
+    if diff_context.patch:
+        patch = f"<pre>{html.escape(diff_context.patch.rstrip())}</pre>"
+    note = ""
+    if diff_context.truncated:
+        note = "<p class=\"body-excerpt\">Diff patch truncated. Inspect the local git diff before editing.</p>"
+
+    return f"""
+        <section>
+          <h2>Git diff context</h2>
+          <p>{html.escape(diff_context.summary)}</p>
+          {patch}
+          {note}
+        </section>
+    """
 
 def render_file_card(hit: object) -> str:
     reasons = "".join(f"<li>{html.escape(reason)}</li>" for reason in hit.reasons)

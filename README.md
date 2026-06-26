@@ -114,6 +114,12 @@ JSON for automation:
 issue-to-agent OWNER/REPO#123 --repo . --format json --output ISSUE_AGENT_TASK.json
 ```
 
+Include tracked work-in-progress changes:
+
+```bash
+issue-to-agent OWNER/REPO#123 --repo . --include-diff --output ISSUE_AGENT_TASK.md
+```
+
 HTML for maintainers:
 
 ```bash
@@ -189,6 +195,7 @@ You can also reuse the composite action directly:
 - likely source, test, docs, config, and workflow files
 - checklist items in the issue body as acceptance criteria
 - sensitive keywords such as auth, billing, payment, migration, secret, and token
+- optional tracked git diff context when `--include-diff` is passed
 
 ## When To Use It
 
@@ -220,8 +227,8 @@ You can also reuse the composite action directly:
 ## Roadmap
 
 - Add config for ignored paths, command preferences, and ranking boosts.
-- Add optional `git diff` context for issue fixes already in progress.
 - Add more real-repo fixtures for Go.
+- Add richer Cursor and Copilot CLI workflow examples.
 
 ## Contributing
 

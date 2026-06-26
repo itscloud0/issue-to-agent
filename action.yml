@@ -34,6 +34,14 @@ inputs:
     description: "Prompt profile: codex, claude, cursor, or generic."
     required: false
     default: codex
+  include-diff:
+    description: Include current tracked git diff context.
+    required: false
+    default: "false"
+  max-diff-chars:
+    description: Maximum git diff patch characters when include-diff is true.
+    required: false
+    default: "12000"
 
 runs:
   using: composite
@@ -76,9 +84,16 @@ runs:
     - name: Generate task pack
       shell: bash
       run: |
-        issue-to-agent "$ISSUE_TO_AGENT_INPUT" \
+        args=(
+          "$ISSUE_TO_AGENT_INPUT" \
           --repo "$GITHUB_WORKSPACE" \
           --format "${{ inputs.format }}" \
           --max-files "${{ inputs.max-files }}" \
           --profile "${{ inputs.profile }}" \
+          --max-diff-chars "${{ inputs.max-diff-chars }}" \
           --output "${{ inputs.output-path }}"
+        )
+        if [ "${{ inputs.include-diff }}" = "true" ]; then
+          args+=(--include-diff)
+        fi
+        issue-to-agent "${args[@]}"

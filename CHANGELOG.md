@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add opt-in tracked git diff context with `--include-diff`.
 - Add `--format prompt` for writing only the ready-to-paste agent prompt.
 - Improve Rust/source-path ranking using identifier, extension, and title-term signals.
 - Improve code-reference and source/test companion ranking for issue-localization.
