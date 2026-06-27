@@ -256,7 +256,7 @@ The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--rep
 ## Roadmap
 
 - Add more real-repo fixtures for Go.
-- Add richer Cursor and Copilot CLI workflow examples.
+- Add more package-manager and monorepo workflow examples.
 
 ## Contributing
 

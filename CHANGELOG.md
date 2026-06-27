@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Expand Cursor and Copilot Agent Skill workflow examples.
 - Add optional project config for ignored paths, command preferences, and ranking boosts.
 - Add opt-in tracked git diff context with `--include-diff`.
 - Add `--format prompt` for writing only the ready-to-paste agent prompt.
