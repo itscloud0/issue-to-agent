@@ -13,11 +13,16 @@ It ships as:
 - GitHub Action for `agent-ready` issues
 - Markdown, JSON, and screenshot-ready HTML reports
 
-## 30-Second Quickstart
+## Clone-to-first-task-pack quickstart
+
+The package is not published to PyPI yet. From a fresh checkout, create an isolated environment and generate the included task pack:
 
 ```bash
-python -m pip install .
-issue-to-agent examples/issue-checkout-timeout.md \
+git clone https://github.com/itscloud0/issue-to-agent.git
+cd issue-to-agent
+python3 -m venv .venv
+.venv/bin/python -m pip install .
+.venv/bin/issue-to-agent examples/issue-checkout-timeout.md \
   --repo examples/mini-repo \
   --output ISSUE_AGENT_TASK.md
 ```
@@ -81,7 +86,7 @@ From a checkout:
 python -m pip install .
 ```
 
-After publication:
+From GitHub without keeping a checkout:
 
 ```bash
 python -m pip install git+https://github.com/itscloud0/issue-to-agent.git
