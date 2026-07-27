@@ -1,6 +1,6 @@
 # Real-Repo Smoke Tests
 
-Date: 2026-06-18
+Date: 2026-06-18; updated 2026-07-27
 
 ## Target 1
 
@@ -179,4 +179,64 @@ cargo build
 ## Not Verified
 
 - The ripgrep test suite was not run. This smoke validates task-pack generation, not the upstream traversal fix.
+- The generated task pack was not posted to GitHub.
+
+## Target 4
+
+- Repository: `go-chi/chi`
+- Clone URL: `https://github.com/go-chi/chi.git`
+- Smoke commit: `8b258c7bb28f97a5f2a856ff7ef962578fec9215`
+- Issue: https://github.com/go-chi/chi/issues/1128
+- Issue title: `Add explicit Router convenience method for HTTP QUERY`
+
+## Commands Run
+
+The smoke used a pinned public source tarball so the generated output is
+reproducible even when the GitHub CLI is not authenticated:
+
+```bash
+tmpdir=$(mktemp -d /tmp/issue-to-agent-go.XXXXXX)
+curl -L https://github.com/go-chi/chi/archive/8b258c7bb28f97a5f2a856ff7ef962578fec9215.tar.gz \
+  -o "$tmpdir/chi.tgz"
+tar -xzf "$tmpdir/chi.tgz" -C "$tmpdir"
+PYTHONPATH=src python3 -m issue_to_agent.cli examples/real-go-chi-1128.md \
+  --repo "$tmpdir/chi-8b258c7bb28f97a5f2a856ff7ef962578fec9215" \
+  --output examples/real-go-chi-1128-task.md
+PYTHONPATH=src python3 -m issue_to_agent.cli examples/real-go-chi-1128.md \
+  --repo "$tmpdir/chi-8b258c7bb28f97a5f2a856ff7ef962578fec9215" \
+  --format html \
+  --output demo/real-go-chi-1128.html
+```
+
+## Generated Outputs
+
+- Markdown task pack: `examples/real-go-chi-1128-task.md`
+- HTML report: `demo/real-go-chi-1128.html`
+
+## Output Summary
+
+Top likely files from the generated task pack:
+
+```text
+- mux.go (score 40): code references: query; content mentions: continue, http, library, patch, post, put, query, routing
+- mux_test.go (score 39): code references: query; content mentions: accepted, direct, http, info, patch, post, put, query; test file may need a regression case
+- _examples/rest/main.go (score 36): code references: query; content mentions: etc, good, http, implement, level, post, put, query
+```
+
+Suggested commands:
+
+```text
+go test ./...
+make test
+```
+
+## Findings
+
+- The smoke produced a real Go repository example with source, test, and module-aware command detection.
+- The task pack ranks `mux.go` and `mux_test.go` ahead of broad documentation and example files for the HTTP QUERY request.
+- The repo has no `AGENTS.md`, `CLAUDE.md`, or common editor instruction file, so the risk section correctly calls that out.
+
+## Not Verified
+
+- The `go-chi/chi` test suite was not run because the Go toolchain is not installed in this environment. This smoke validates task-pack generation, not the upstream feature.
 - The generated task pack was not posted to GitHub.

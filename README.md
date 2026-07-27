@@ -47,6 +47,7 @@ Generated demo reports:
 - `demo/real-click-3571.html`
 - `demo/real-ky-863.html`
 - `demo/real-ripgrep-3419.html`
+- `demo/real-go-chi-1128.html`
 
 Create a fresh HTML report:
 
@@ -68,9 +69,10 @@ This repo includes real smoke tests against `pallets/click#3571`, `sindresorhus/
 - generated HTML: `demo/real-click-3571.html`
 - generated HTML: `demo/real-ky-863.html`
 - generated HTML: `demo/real-ripgrep-3419.html`
+- generated HTML: `demo/real-go-chi-1128.html`
 
 The Click smoke found plausible files first: `src/click/termui.py`, `src/click/_termui_impl.py`, and `tests/test_termui.py`. The ky smoke found `source/types/hooks.ts` first for a TypeScript hook typing issue.
-The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-walk nondeterminism bug.
+The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-walk nondeterminism bug. The Go chi smoke found `mux.go` and `mux_test.go` first for an HTTP QUERY routing feature request and suggested `go test ./...`.
 
 ## Evidence
 
@@ -260,7 +262,8 @@ The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--rep
 
 ## Roadmap
 
-- Add more real-repo fixtures for Go.
+- Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.
+- Add clipboard-friendly examples for `--format prompt`.
 - Add more package-manager and monorepo workflow examples.
 
 ## Contributing
