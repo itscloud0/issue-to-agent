@@ -88,20 +88,24 @@ I included real smokes against `pallets/click#3571` and `sindresorhus/ky#863`; f
 4. Review likely files and commands in a static HTML report.
 5. Run the CLI locally without any LLM key.
 
-## Good First Issues
+## Remaining Small Opportunity
 
-1. Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.
-2. Add clipboard-friendly examples for `--format prompt`.
+Add clipboard-friendly examples for `--format prompt`.
 
-## Roadmap Issues
+## Roadmap Status
 
-1. Add config file support for ignored paths, command preferences, and ranking boosts.
-2. Add optional `git diff` context for issues with a work-in-progress branch.
-3. Add more skill examples for Cursor and Copilot CLI workflows.
+The original launch roadmap items are shipped:
 
-## Suggested First Release Title
+- Config file support for ignored paths, command preferences, and ranking boosts (`a71d256`).
+- Optional tracked `git diff` context for work-in-progress branches (`07a3196`).
+- Cursor and Copilot workflow examples (`8407831`).
+- `tox.ini`, `noxfile.py`, and `uv` test-command detection (`7ae62c7`).
 
-`issue-to-agent v0.1.0`
+No additional roadmap item is recorded here until a new user-facing gap is evidenced.
+
+## Current Release
+
+The first public release is `v0.1.0`. The package is currently installed from a checkout or GitHub URL; PyPI publication is not yet available.
 
 ## Maintainer Note
 
