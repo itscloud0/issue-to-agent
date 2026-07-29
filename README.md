@@ -39,6 +39,30 @@ Suggested commands:
 - python -m unittest discover -s tests
 ```
 
+To copy only the prompt to your clipboard, use `--format prompt` after activating
+the virtual environment:
+
+```bash
+# macOS
+issue-to-agent examples/issue-checkout-timeout.md \
+  --repo examples/mini-repo --format prompt | pbcopy
+
+# Linux with xclip
+issue-to-agent examples/issue-checkout-timeout.md \
+  --repo examples/mini-repo --format prompt | xclip -selection clipboard
+```
+
+In PowerShell, capture the prompt and copy it with the built-in clipboard cmdlet:
+
+```powershell
+$prompt = issue-to-agent examples/issue-checkout-timeout.md `
+  --repo examples/mini-repo --format prompt
+Set-Clipboard -Value $prompt
+```
+
+The prompt format writes only the ready-to-paste agent instructions to stdout; use
+`--output prompt.txt` when you want to keep a file instead.
+
 ## HTML Demo
 
 Generated demo reports:
@@ -263,7 +287,6 @@ The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--rep
 ## Roadmap
 
 - Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.
-- Add clipboard-friendly examples for `--format prompt`.
 - Add more package-manager and monorepo workflow examples.
 
 ## Contributing

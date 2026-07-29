@@ -88,9 +88,10 @@ I included real smokes against `pallets/click#3571` and `sindresorhus/ky#863`; f
 4. Review likely files and commands in a static HTML report.
 5. Run the CLI locally without any LLM key.
 
-## Remaining Small Opportunity
+## Small Opportunity Completed
 
-Add clipboard-friendly examples for `--format prompt`.
+The README now includes clipboard-friendly `--format prompt` examples for macOS,
+Linux with `xclip`, and PowerShell, plus the file-output alternative.
 
 ## Roadmap Status
 
