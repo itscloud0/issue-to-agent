@@ -106,16 +106,31 @@ The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-wa
 
 ## Installation
 
-From a checkout:
+The package is not published to PyPI yet. For a reproducible install without
+keeping a tool checkout, use the public `v0.1.0` tag:
+
+```bash
+python3 -m pip install "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0"
+```
+
+For an isolated command-line install with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv tool install "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0"
+issue-to-agent OWNER/REPO#123 --repo .
+```
+
+For a one-off task pack without a persistent install or tool checkout:
+
+```bash
+uvx --from "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0" \
+  issue-to-agent OWNER/REPO#123 --repo . --output ISSUE_AGENT_TASK.md
+```
+
+From a checkout, for local development and the included examples:
 
 ```bash
 python -m pip install .
-```
-
-From GitHub without keeping a checkout:
-
-```bash
-python -m pip install git+https://github.com/itscloud0/issue-to-agent.git
 ```
 
 ## CLI Usage
