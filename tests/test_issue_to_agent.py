@@ -526,6 +526,7 @@ class IssueToAgentTests(unittest.TestCase):
 
     def test_github_action_and_issue_workflow_are_wired(self):
         action = (ROOT / "action.yml").read_text(encoding="utf-8")
+        ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         workflow = (ROOT / ".github" / "workflows" / "issue-agent-task.yml").read_text(
             encoding="utf-8"
         )
@@ -535,7 +536,19 @@ class IssueToAgentTests(unittest.TestCase):
         self.assertIn("Generate task pack", action)
         self.assertIn("issues:", workflow)
         self.assertIn("agent-ready", workflow)
-        self.assertIn("actions/upload-artifact@v5", workflow)
+        for workflow_text in (ci, workflow):
+            self.assertIn(
+                "actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5",
+                workflow_text,
+            )
+            self.assertIn(
+                "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6",
+                workflow_text,
+            )
+        self.assertIn(
+            "actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5",
+            workflow,
+        )
         self.assertIn("gh issue comment", workflow)
 
     def test_docs_link_agent_skill_and_demo_surfaces(self):
