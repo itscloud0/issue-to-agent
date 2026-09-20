@@ -106,8 +106,22 @@ The ripgrep smoke found `crates/ignore/src/walk.rs` first for a Rust parallel-wa
 
 ## Installation
 
-The package is not published to PyPI yet. For a reproducible install without
-keeping a tool checkout, use the public `v0.1.0` tag:
+The package is not published to PyPI yet. For the fastest checkout-free install,
+download the prebuilt public `v0.1.0` wheel:
+
+```bash
+python3 -m pip install "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl"
+```
+
+If the wheel is not suitable for your platform, install the matching source
+distribution from the same release:
+
+```bash
+python3 -m pip install "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0.tar.gz"
+```
+
+If the release assets are unavailable, install the exact public `v0.1.0` tag
+from GitHub:
 
 ```bash
 python3 -m pip install "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0"

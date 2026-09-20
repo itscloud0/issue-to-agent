@@ -562,6 +562,18 @@ class IssueToAgentTests(unittest.TestCase):
         self.assertIn("demo/issue-checkout-timeout.html", readme)
         self.assertIn("demo/real-ky-863.html", readme)
         self.assertIn("agent-ready", readme)
+        self.assertIn(
+            "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl",
+            readme,
+        )
+        self.assertIn(
+            "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0.tar.gz",
+            readme,
+        )
+        self.assertIn(
+            "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0",
+            readme,
+        )
 
     def test_benchmark_fixtures_cover_migration_scope(self):
         payload = json.loads(

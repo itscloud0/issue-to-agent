@@ -106,7 +106,14 @@ No additional roadmap item is recorded here until a new user-facing gap is evide
 
 ## Current Release
 
-The first public release is `v0.1.0`. The package is currently installed from a checkout or GitHub URL; PyPI publication is not yet available.
+The first public release is `v0.1.0`. Its exact-tag-built wheel and source
+distribution are available from the GitHub release, and the README documents
+both direct artifact URLs plus the immutable Git fallback. PyPI publication is
+not yet available.
+
+The next maintainer action is to observe release-asset downloads and external
+usage evidence; do not treat existing forks or downloads as confirmed product
+adoption.
 
 ## Maintainer Note
 
