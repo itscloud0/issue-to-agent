@@ -13,7 +13,27 @@ It ships as:
 - GitHub Action for `agent-ready` issues
 - Markdown, JSON, and screenshot-ready HTML reports
 
-## Clone-to-first-task-pack quickstart
+## Checkout-free first task pack
+
+The public `v0.1.0` wheel can run through `uvx`, so you can turn an issue in
+an existing checkout into a task pack without cloning this repository:
+
+```bash
+cd /path/to/target-repo
+uvx --from "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl" \
+  issue-to-agent OWNER/REPO#123 --repo . --output ISSUE_AGENT_TASK.md
+```
+
+For a persistent isolated CLI, install the same public wheel with `uv`:
+
+```bash
+uv tool install "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl"
+issue-to-agent OWNER/REPO#123 --repo .
+```
+
+Open the generated task pack and paste the agent-ready prompt into Codex, Claude Code, Cursor, or Copilot.
+
+## Checkout quickstart (included examples)
 
 The package is not published to PyPI yet. From a fresh checkout, create an isolated environment and generate the included task pack:
 
@@ -130,14 +150,14 @@ python3 -m pip install "git+https://github.com/itscloud0/issue-to-agent.git@v0.1
 For an isolated command-line install with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv tool install "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0"
+uv tool install "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl"
 issue-to-agent OWNER/REPO#123 --repo .
 ```
 
 For a one-off task pack without a persistent install or tool checkout:
 
 ```bash
-uvx --from "git+https://github.com/itscloud0/issue-to-agent.git@v0.1.0" \
+uvx --from "https://github.com/itscloud0/issue-to-agent/releases/download/v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl" \
   issue-to-agent OWNER/REPO#123 --repo . --output ISSUE_AGENT_TASK.md
 ```
 

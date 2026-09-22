@@ -21,6 +21,21 @@ EXAMPLE_ISSUE = ROOT / "examples" / "issue-checkout-timeout.md"
 
 
 class IssueToAgentTests(unittest.TestCase):
+    def test_readme_prioritizes_checkout_free_release_install(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        wheel_url = (
+            "https://github.com/itscloud0/issue-to-agent/releases/download/"
+            "v0.1.0/issue_to_agent-0.1.0-py3-none-any.whl"
+        )
+        checkout_free = readme.split("## Checkout quickstart", 1)[0]
+
+        self.assertIn(f'uvx --from "{wheel_url}"', checkout_free)
+        self.assertIn(f'uv tool install "{wheel_url}"', checkout_free)
+        self.assertLess(
+            readme.index("## Checkout-free first task pack"),
+            readme.index("## Checkout quickstart"),
+        )
+
     def test_parse_issue_text_uses_heading_as_title(self):
         issue = parse_issue_text("# Payment bug\n\nBody here", source="test")
 

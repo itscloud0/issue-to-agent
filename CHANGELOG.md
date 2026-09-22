@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Promote the checkout-free public wheel path to the primary quickstart and use it for `uv` tool installs and `uvx` task packs.
 - Add a reproducible Go smoke fixture for `go-chi/chi#1128` with Markdown and HTML task-pack outputs.
 - Expand Cursor and Copilot Agent Skill workflow examples.
 - Add optional project config for ignored paths, command preferences, and ranking boosts.
