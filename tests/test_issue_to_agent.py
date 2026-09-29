@@ -36,6 +36,21 @@ class IssueToAgentTests(unittest.TestCase):
             readme.index("## Checkout quickstart"),
         )
 
+    def test_readme_documents_shipped_tox_nox_and_uv_detection(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "`tox` from a valid `[tox]` section in `tox.ini`",
+            "`nox` from a non-empty `noxfile.py`",
+            "`uv sync` and `uv run` test commands from `uv.lock` or `[tool.uv]`",
+        ):
+            self.assertIn(phrase, readme)
+
+        self.assertNotIn(
+            "Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.",
+            readme,
+        )
+
     def test_parse_issue_text_uses_heading_as_title(self):
         issue = parse_issue_text("# Payment bug\n\nBody here", source="test")
 

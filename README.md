@@ -296,6 +296,9 @@ The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--rep
 
 - `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `.cursor/rules`
 - Python install/test commands from `pyproject.toml` and `tests/`
+- `tox` from a valid `[tox]` section in `tox.ini`
+- `nox` from a non-empty `noxfile.py`
+- `uv sync` and `uv run` test commands from `uv.lock` or `[tool.uv]`
 - Node scripts from `package.json`
 - Go verification commands from `go.mod`
 - Rust verification commands from `Cargo.toml`
@@ -335,7 +338,6 @@ The CLI auto-discovers `.issue-to-agent.json` or `issue-to-agent.json` in `--rep
 
 ## Roadmap
 
-- Detect test commands from `tox.ini`, `noxfile.py`, and `uv` projects.
 - Add more package-manager and monorepo workflow examples.
 
 ## Contributing
